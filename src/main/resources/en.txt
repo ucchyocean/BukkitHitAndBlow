@@ -1,0 +1,73 @@
+cannotRunOnConsole=Cannot execute this command from a console.
+cannotRunInGame=You cannot execute this command during a game.
+
+singleExpire=You surpassed the game play possibility number of times of today.
+singleTimes=You play the game %d times today.
+singleLeast=You can play more game in %d times today.
+
+versusOffline=The partner player is offline.
+versusPartnerInGame=A partner player is playing a game.
+versusSelf=You cannot set yourself for a partner player.
+
+versusDontHaveFunds=You don't have funds %.2f%s.
+versusCannotAccept=It is not applied to you for a game now.
+versusNotPlayerInGame=There is not you in play games now.
+
+versusSetNumber=Please set your Number. /%s set [Number]
+versusSetNumberFigures=Please set the Number of %d figures.
+versusSetNumberSame=You cannot include the same number.
+
+notPlayerForCall=You are not a player having Call.
+pleaseCall=Please call Number. /%s call [Number]
+
+notPlayerForCancel=You are not a player having Cancel.
+
+notPlayerInGame=You are not a player playing a game.
+
+usageNSingle=newgame - Start a new Single game.
+usageNVersus=newgame <player> - Start a new Versus game.
+usageAccept=accept - Accept for Versus game.
+usageSet=set <number> - When starting a Versus game, you can set your Number.
+usageCall=call <number> - In your turn, you can Call the Number.
+usageCancel=cancel - When sending Versus game, you can cancel the game.
+usageHistory=history - When you are playing a game, show Call history.
+
+announceSingleStart=%s started a game.
+singleStarting=Starting a game. Let's break Number!
+
+singleTurnStart1=Turn %d. Please Call Number.
+singleTurnStart2=/hb call [Number of %d figures]
+
+turnCalled1=%s calls %s.
+turnCalled2=%s is %d Hit, %d Blow.
+turnCalled3=%s is %d Hit.
+
+singleWon=You won the game. Congratulations!
+announceSingleEnd=%s won the game by %d turn of Call.
+
+canceled=HitAndBlow was canceled.
+
+singleWonPay1=You won the game by %d turn of Call.
+singleWonPay2=You got prize money %.2f%s.
+
+versusNewgameSend=You sent a game to %s.
+versusNewgameReceive1=New Versus game arrived from %s.
+versusNewgameReceive2=%.2f%s is necessary to receive a game. Do you receive a game?
+versusNewgameReceive3=Please run "/hb accept" to receive a game.
+
+versusPartnerNotHaveFunds=%s do not have funds %.2f%s.
+versusStarting1=You paid %.2f%s.
+versusStarting2=Please set Number. /hb set [Number of %d figures]
+
+versusSet=%s set Number.
+
+announceVersusStart=%s and %s started a game.
+versusStarting3=Starting a game. Let's break Number!
+
+versusTurnStart1=%s's turn.
+versusTurnStart2=Please Call Number.
+versusTurnStart3=/hb call [Number of %d figures]
+
+versusWon=You won the game. Congratulations!
+versusLost=You lost a game.
+announceVersusEnd=%s won to %s by %d turn of Call.

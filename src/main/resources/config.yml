@@ -1,0 +1,34 @@
+# Hit And Blow 0.0.1
+# @author     ucchy
+# @license    GPLv2
+# @copyright  Copyright ucchy 2012
+
+# Announce the starting and ending of game.
+announce: true
+
+# Resource language.
+lang: en
+
+# Settings for Single mode game.
+single:
+  
+  # Game level.
+  level: 3
+  
+  # Reward money for winner.
+  rewards: [100000.0, 10000.0, 2500.0, 1000.0, 250.0, 100.0, 50.0, 25.0, 10.0, 5.0]
+  
+  # Playable times in daily. If set 0, the users can play single game infinity.
+  dailyTimes: 3
+
+# Settings for Versus mode game.
+versus:
+  
+  # Game level.
+  level: 3
+  
+  # Stake money for versus game.
+  stake: 100.0
+
+  # Reward money for versus game winner.
+  reward: 200.0

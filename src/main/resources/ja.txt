@@ -1,0 +1,73 @@
+cannotRunOnConsole=コンソールからは実行できないコマンドです。
+cannotRunInGame=ゲーム中にこのコマンドは実行できません。
+
+singleExpire=本日のゲームプレイ回数を越えました。
+singleTimes=本日、%d回目のゲームです。
+singleLeast=あと%d回、ゲームができます。
+
+versusOffline=相手プレイヤーはオフラインです。
+versusPartnerInGame=相手プレイヤーがゲーム中です。
+versusSelf=対戦相手には自分を指定できません。
+
+versusDontHaveFunds=掛け金%.2f%sがありません。
+versusCannotAccept=あなたは現在ゲームを申請されていません。
+versusNotPlayerInGame=あなたは現在対戦ゲーム中ではありません。
+
+versusSetNumber=Numberを指定してください。/%s set [Number]
+versusSetNumberFigures=%d桁の数字を指定してください。
+versusSetNumberSame=同じ数字を含めることはできません。
+
+notPlayerForCall=あなたはCallできるプレイヤーではありません。
+pleaseCall=Numberを指定してください。/%s call [Number]
+
+notPlayerForCancel=あなたはCancelできるプレイヤーではありません。
+
+notPlayerInGame=あなたはゲーム中のプレイヤーではありません。
+
+usageNSingle=newgame 新しいシングルゲームを開始します。
+usageNVersus=newgame [player] 新しい対戦ゲームを開始します。
+usageAccept=accept ゲームの申請を受けます。
+usageSet=set <number> ゲーム開始時に、自分の番号を設定します。
+usageCall=call <number> 自分のターン時に、NumberをCallします。
+usageCancel=cancel ゲーム申請時に、申請したゲームをキャンセルします。
+usageHistory=history ゲーム中の時に、Call履歴を表示します。
+
+announceSingleStart=%sさんがゲームを開始しました。
+singleStarting=ゲームを開始します。Let's break code!
+
+singleTurnStart1=%d回目のターンです。Numberをコールしてください。
+singleTurnStart2=/hb call [%d桁の数字]
+
+turnCalled1=%s さんが %s をコール。
+turnCalled2=%s は、%d Hit、%d Blow です。
+turnCalled3=%s は、%d Hit です。
+
+singleWon=あなたの勝ちです。おめでとうございます！
+announceSingleEnd=%sさんが%d回目のコールで勝利しました。
+
+canceled=HitAndBlowがキャンセルされました。
+
+singleWonPay1=%d回目で当てました。
+singleWonPay2=賞金%.2f%sを支払います。
+
+versusNewgameSend=%s さんにHitAndBlowの挑戦を送りました。
+versusNewgameReceive1=%s さんからHitAndBlowの挑戦が届きました。
+versusNewgameReceive2=ゲームを受けるには、掛け金%.2f%sが必要です。ゲームを受けますか？
+versusNewgameReceive3=ゲームを受けるには、/hb accept を実行してください。
+
+versusPartnerNotHaveFunds=%s さんは掛け金%.2f%sが足りません。
+versusStarting1=掛け金%.2f%sを支払いました。ゲームを開始します。
+versusStarting2=Numberを設定してください。/hb set [%d桁の数字]
+
+versusSet=%s さんがNumberを設定しました。
+
+announceVersusStart=%sさんと%sさんがゲームを開始しました。
+versusStarting3=ゲームを開始します。Let's break code!
+
+versusTurnStart1=%s さんのターンです。
+versusTurnStart2=Numberをコールしてください。
+versusTurnStart3=/hb call [%d桁の数字]
+
+versusWon=あなたの勝ちです。おめでとうございます！
+versusLost=あなたの負けです。
+announceVersusEnd=%sさんが%sさんに、%d回目のコールで勝利しました。
