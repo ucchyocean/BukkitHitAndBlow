@@ -30,7 +30,9 @@ usageAccept=accept ゲームの申請を受けます。
 usageSet=set <number> ゲーム開始時に、自分の番号を設定します。
 usageCall=call <number> 自分のターン時に、NumberをCallします。
 usageCancel=cancel ゲーム申請時に、申請したゲームをキャンセルします。
+usageHist=hist ゲーム中の時に、Call履歴を表示します。
 usageHistory=history ゲーム中の時に、Call履歴を表示します。
+usageRanking=rank スコアランキングを参照します。
 
 announceSingleStart=%sさんがゲームを開始しました。
 singleStarting=ゲームを開始します。Let's break code!
@@ -46,6 +48,7 @@ singleWon=あなたの勝ちです。おめでとうございます！
 announceSingleEnd=%sさんが%d回目のコールで勝利しました。
 
 canceled=HitAndBlowがキャンセルされました。
+versusCancelReturn=掛け金%.2f%sを返却します。
 
 singleWonPay1=%d回目で当てました。
 singleWonPay2=賞金%.2f%sを支払います。
@@ -71,3 +74,13 @@ versusTurnStart3=/hb call [%d桁の数字]
 versusWon=あなたの勝ちです。おめでとうございます！
 versusLost=あなたの負けです。
 announceVersusEnd=%sさんが%sさんに、%d回目のコールで勝利しました。
+
+
+phaseSingle=シングルゲーム
+phaseVersusPrepare=対戦ゲーム 準備中
+phaseVersusSetnumber=対戦ゲーム 答え設定中
+phaseVersusYourTurn=あなたのターン
+phaseVersusOtherTurn=相手のターン
+phaseVersusCallTurn=%sさんのターン
+phaseEnded=ゲーム終了
+phaseCanced=ゲームキャンセル

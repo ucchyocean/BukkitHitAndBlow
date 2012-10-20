@@ -174,7 +174,9 @@ public class VersusGameSession extends GameSession {
 			if ( HitAndBlow.getAnnounce() ) {
 				Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlow.NAME + "] " +
 						String.format(Resources.get("announceVersusEnd"),
-								player.getName(), player2.getName(), codeHistory.size() ));
+								player.getName(),
+								getOtherPlayer(player).getName(),
+								codeHistory.size() ));
 			}
 
 			runEndPhase();
@@ -194,7 +196,27 @@ public class VersusGameSession extends GameSession {
 	@Override
 	protected void cancelGame() {
 
+		String unit = HitAndBlow.accountHandler.getUnitsPlural();
+
 		printBoth( ChatColor.RED + Resources.get("canceled"));
+
+		if ( phase.equals(GamePhase.VERSUS_SETNUMBER)
+				|| phase.equals(GamePhase.VERSUS_P1CALL)
+				|| phase.equals(GamePhase.VERSUS_P2CALL) ) {
+
+			// returning funds for online player.
+			if ( player1.isOnline() ) {
+				printP1( String.format( Resources.get("versusCancelReturn"),
+						HitAndBlow.getVersusStake(), unit ) );
+				HitAndBlow.accountHandler.addMoney(player1.getName(), HitAndBlow.getVersusStake());
+			}
+			if ( player2.isOnline() ) {
+				printP2( String.format( Resources.get("versusCancelReturn"),
+						HitAndBlow.getVersusStake(), unit ) );
+				HitAndBlow.accountHandler.addMoney(player2.getName(), HitAndBlow.getVersusStake());
+			}
+		}
+
 		super.cancelGame();
 	}
 
@@ -253,15 +275,15 @@ public class VersusGameSession extends GameSession {
 	@Override
 	protected boolean isPlayerForCancel(Player player) {
 
-		return (phase.equals(GamePhase.VERSUS_PREPARE) || phase.equals(GamePhase.VERSUS_SETNUMBER));
+		return !(phase.equals(GamePhase.CANCELED) || phase.equals(GamePhase.ENDED));
 	}
 
 	@Override
-	protected Vector<String> getHistory(boolean withAnswer) {
+	protected Vector<String> getHistory(Player player) {
 
 		Vector<String> history = new Vector<String>();
 
-		history.add(String.format("Status: %s", phase));
+		history.add(String.format("Status: %s", getPhaseForPrint(phase, player)));
 		history.add(String.format("%-10s %-10s",
 				player1.getName(), player2.getName()));
 		history.add("----------------------");
@@ -282,13 +304,52 @@ public class VersusGameSession extends GameSession {
 					p2codeHistry.lastElement(), p2score[0], p2score[1] ));
 		}
 
-		if ( p1answer != null && p2answer != null && withAnswer) {
+		if ( p1answer != null && p2answer != null ) {
 			history.add("------- answer -------");
-			history.add(String.format("%s        %s",
-					parseI2S(p1answer), parseI2S(p2answer) ));
+			if ( player == null ) {
+				history.add(String.format("%s        %s",
+						parseI2S(p2answer), parseI2S(p1answer) ));
+			} else if ( player.equals(player1) ) {
+				history.add(String.format("???       %s",
+						parseI2S(p1answer) ));
+			} else if ( player.equals(player2) ) {
+				history.add(String.format("%s        ???",
+						parseI2S(p2answer) ));
+			}
 		}
 
 		return history;
+	}
+
+	private String getPhaseForPrint(GamePhase phase, Player player) {
+
+		if ( phase.equals(GamePhase.VERSUS_PREPARE) ) {
+			return Resources.get("phaseVersusPrepare");
+		} else if ( phase.equals(GamePhase.VERSUS_SETNUMBER) ) {
+			return Resources.get("phaseVersusSetnumber");
+		} else if ( phase.equals(GamePhase.VERSUS_P1CALL) ) {
+			if ( player1.equals(player) ) {
+				return ChatColor.RED + Resources.get("phaseVersusYourTurn");
+			} else if ( player2.equals(player) ) {
+				return Resources.get("phaseVersusOtherTurn");
+			} else {
+				return Resources.get("phaseVersusCallTurn");
+			}
+		} else if ( phase.equals(GamePhase.VERSUS_P2CALL) ) {
+			if ( player1.equals(player) ) {
+				return Resources.get("phaseVersusOtherTurn");
+			} else if ( player2.equals(player) ) {
+				return ChatColor.RED + Resources.get("phaseVersusYourTurn");
+			} else {
+				return Resources.get("phaseVersusCallTurn");
+			}
+		} else if ( phase.equals(GamePhase.ENDED) ) {
+			return Resources.get("phaseEnded");
+		} else if ( phase.equals(GamePhase.CANCELED) ) {
+			return Resources.get("phaseCanced");
+		}
+
+		return "unknown game phase";
 	}
 
 	private void printBoth(String message) {

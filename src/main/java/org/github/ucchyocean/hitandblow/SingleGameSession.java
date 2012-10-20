@@ -106,11 +106,12 @@ public class SingleGameSession extends GameSession {
 		}
 	}
 
-	protected Vector<String> getHistory(boolean withAnswer) {
+	@Override
+	protected Vector<String> getHistory(Player player) {
 
 		Vector<String> history = new Vector<String>();
 
-		history.add(String.format("Status: %s", phase));
+		history.add(String.format("Status: %s", getPhaseForPrint(phase)));
 		history.add(String.format("%-10s", player1.getName()));
 		history.add("----------------------");
 
@@ -121,12 +122,26 @@ public class SingleGameSession extends GameSession {
 				p1codeHistory.elementAt(i), p1score[0], p1score[1] ));
 		}
 
-		if ( p2answer != null && withAnswer ) {
+		if ( p2answer != null && player == null ) {
 			history.add("------- answer -------");
 			history.add(String.format("%s", parseI2S(p2answer) ));
 		}
 
 		return history;
+	}
+
+
+	private String getPhaseForPrint(GamePhase phase) {
+
+		if ( phase.equals(GamePhase.SINGLE_CALL) ) {
+			return Resources.get("phaseSingle");
+		} else if ( phase.equals(GamePhase.ENDED) ) {
+			return Resources.get("phaseEnded");
+		} else if ( phase.equals(GamePhase.CANCELED) ) {
+			return Resources.get("phaseCanced");
+		}
+
+		return "unknown game phase";
 	}
 
 	/* (非 Javadoc)

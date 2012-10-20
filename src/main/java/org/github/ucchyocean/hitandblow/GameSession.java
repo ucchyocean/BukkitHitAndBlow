@@ -105,7 +105,7 @@ public abstract class GameSession {
 
 	protected void saveGameLog() {
 
-		List<String> contents = getHistory(true);
+		List<String> contents = getHistory(null);
 
 		File logFileFolder = new File(HitAndBlow.GameLogFolder);
 
@@ -163,14 +163,14 @@ public abstract class GameSession {
 
 	protected void printHistory(Player player) {
 
-		List<String> messages = getHistory(false);
+		List<String> messages = getHistory(player);
 
 		for ( String m : messages ) {
 			player.sendMessage(ChatColor.GRAY + m);
 		}
 	}
 
-	protected abstract List<String> getHistory(boolean withAnswer);
+	protected abstract List<String> getHistory(Player player);
 	protected abstract void callNumber(Player player, String number) throws HitAndBlowException;
 	protected abstract boolean isPlayerForSet(Player player);
 	protected abstract boolean isPlayerForCall(Player player);

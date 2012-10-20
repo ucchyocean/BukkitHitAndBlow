@@ -3,6 +3,8 @@
  */
 package org.github.ucchyocean.hitandblow;
 
+import java.util.Vector;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -27,6 +29,12 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 		String preErr = ChatColor.DARK_RED + prefix;
 
 		if ( !(sender instanceof Player) ) {
+
+			if ( args.length > 0 && args[0].equalsIgnoreCase("rank") ) {
+				printRanking(sender);
+				return true;
+			}
+
 			sender.sendMessage(preErr + Resources.get("cannotRunOnConsole"));
 			return true;
 		}
@@ -192,7 +200,7 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 
 			return GameSessionManager.cancelGameByPlayer(player);
 
-		} else if ( args[0].equalsIgnoreCase("history") ) {
+		} else if ( args[0].equalsIgnoreCase("hist") || args[0].equalsIgnoreCase("history") ) {
 
 			if ( !GameSessionManager.isPlayerForHistory(player) ) {
 				sender.sendMessage(preErr + Resources.get("notPlayerInGame"));
@@ -200,6 +208,11 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 			}
 
 			return GameSessionManager.printHistoryByPlayer(player);
+
+		} else if ( args[0].equalsIgnoreCase("rank") ) {
+
+			printRanking(sender);
+			return true;
 		}
 
 		return false;
@@ -215,6 +228,26 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 		sender.sendMessage(prefix + Resources.get("usageSet"));
 		sender.sendMessage(prefix + Resources.get("usageCall"));
 		sender.sendMessage(prefix + Resources.get("usageCancel"));
+		sender.sendMessage(prefix + Resources.get("usageHist"));
 		sender.sendMessage(prefix + Resources.get("usageHistory"));
+	}
+
+	private void printRanking(CommandSender sender) {
+
+		String prefix = ChatColor.GRAY.toString() + "";
+
+		sender.sendMessage(prefix + "Hit and Blow  Score Ranking");
+		sender.sendMessage(prefix + "---------------------------");
+
+		Vector<ScoreData> data = UserConfiguration.getRanking();
+
+		int maxToDisplay = data.size();
+		if ( data.size() > 10 ) {
+			maxToDisplay = 10;
+		}
+
+		for ( int i=0; i<maxToDisplay; i++ ) {
+			sender.sendMessage(prefix + data.elementAt(i).toString());
+		}
 	}
 }

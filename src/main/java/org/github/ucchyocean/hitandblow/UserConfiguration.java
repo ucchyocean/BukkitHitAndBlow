@@ -9,10 +9,14 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Vector;
 
 /**
  * @author ucchy
@@ -155,5 +159,43 @@ public class UserConfiguration extends HashMap<String, Object> {
     	conf.put(KEY_USER_SCORE, score + value);
 
     	conf.save(name);
+    }
+
+    public static Vector<ScoreData> getRanking() {
+
+    	Vector<ScoreData> arr = new Vector<ScoreData>();
+
+	    File folder = new File(HitAndBlow.UserFolder);
+	    if ( !folder.exists() ) {
+	    	folder.mkdirs();
+	    }
+
+	    String[] filelist = folder.list(new FilenameFilter() {
+			public boolean accept(File dir, String name) {
+				if ( name.endsWith(".yml") )
+					return true;
+				return false;
+			}
+	    });
+
+	    for ( String f : filelist ) {
+	    	String userName = f.substring(0, f.indexOf(".") );
+	    	UserConfiguration conf = getUserConfiguration(userName);
+	    	arr.add( new ScoreData( userName, (Double)conf.get(KEY_USER_SCORE) ) );
+	    }
+
+		Collections.sort(arr, new Comparator<ScoreData>() {
+			public int compare(ScoreData o1, ScoreData o2) {
+	    		if ( o1.score < o2.score ) {
+	    			return 1;
+	    		} else if ( o1.score > o2.score ) {
+	    			return -1;
+	    		} else {
+	    			return 0;
+	    		}
+			}
+		});
+
+		return arr;
     }
 }
