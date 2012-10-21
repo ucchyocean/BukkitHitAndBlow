@@ -1,98 +1,85 @@
-cannotRunOnConsole=Cannot execute this command from a console.
+announceSingleEnd=%s won the game by %d turn of Call.
+announceSingleStart=%s started a game.
+announceVersusEnd=%s won to %s by %d turn of Call.
+announceVersusStart=%s and %s started a game.
+
+canceled=HitAndBlow was canceled.
 cannotRunInGame=You cannot execute this command during a game.
+cannotRunOnConsole=Cannot execute this command from a console.
 
-singleExpire=You surpassed the game play possibility number of times of today.
-singleTimes=You play the game %d times today.
-singleLeast=You can play more game in %d times today.
-
-versusOffline=The partner player is offline.
-versusPartnerInGame=A partner player is playing a game.
-versusSelf=You cannot set yourself for a partner player.
-
-versusDontHaveFunds=You don't have funds %.2f%s.
-versusCannotAccept=It is not applied to you for a game now.
-versusNotPlayerInGame=There is not you in play games now.
-versusLevelWasnotInt=Set the level [2-7].
-
-versusSetNumber=Please set your Number. /%s set [Number]
-versusSetNumberFigures=Please set the Number of %d figures.
-versusSetNumberSame=You cannot include the same number.
+listenerAdded=Added you to the listener of game %s.
+listenerAlreadyAdded=Already you listen game %s.
+listenerCanceled=Game %s was canceled.
+listenerExited=Exited from listening of game %s.
+listenerNotAdded=You are not the listener of any game.
+listenerNotFound=Not found game %s.
+listenerPlayer=You are the player of game %s.
+listenerSetName=Please set the game name.
 
 notPlayerForCall=You are not a player having Call.
-pleaseCall=Please call Number. /%s call [Number]
-
 notPlayerForCancel=You are not a player having Cancel.
-
 notPlayerInGame=You are not a player playing a game.
 
-usageNSingle=newgame - Start a new Single game.
-usageNVersus=newgame <player> [level] - Start a new Versus game.
-usageAccept=accept - Accept for Versus game.
-usageSet=set <number> - When starting a Versus game, you can set your Number.
-usageCall=call <number> - In your turn, you can Call the Number.
-usageCancel=cancel - When sending Versus game, you can cancel the game.
-usageHist=hist - When you are playing a game, show Call history.
-usageHistory=history - When you are playing a game, show Call history.
-usageRanking=rank - Show score ranking.
-usageList=list - Show list games.
-usageListen=listen <game name> - Add you for the listener of game.
-usageExitListen=exitListen - Exit from listening of game.
+phaseCanced=Game canceled
+phaseEnded=Game ended
+phaseSingle=Single Game
+phaseVersusCallTurn=%s's turn
+phaseVersusOtherTurn=Partner's turn
+phaseVersusPrepare=Versus Game - Prepare
+phaseVersusSetnumber=Versus Game - Setting answers
+phaseVersusYourTurn=Your turn
 
-announceSingleStart=%s started a game.
+pleaseCall=Please call Number. /%s call [Number]
+
+singleExpire=You surpassed the game play possibility number of times of today.
+singleLeast=You can play more game in %d times today.
 singleStarting=Starting a game. Let's break Number!
-
+singleTimes=You play the game %d times today.
 singleTurnStart1=Turn %d. Please Call Number.
 singleTurnStart2=/hb call [Number of %d figures]
+singleWon=You won the game. Congratulations!
+singleWonPay1=You won the game by %d turn of Call.
+singleWonPay2=You got prize money %.2f%s.
 
 turnCalled1=%s calls %s.
 turnCalled2=%s is %d Hit, %d Blow.
 turnCalled3=%s is %d Hit.
 
-singleWon=You won the game. Congratulations!
-announceSingleEnd=%s won the game by %d turn of Call.
+usageAccept=accept - Accept for Versus game.
+usageCall=call <number> - In your turn, you can Call the Number.
+usageCancel=cancel - When sending Versus game, you can cancel the game.
+usageExitListen=exitListen - Exit from listening of game.
+usageHist=hist - When you are playing a game, show Call history.
+usageHistory=history - When you are playing a game, show Call history.
+usageList=list - Show list games.
+usageListen=listen <game name> - Add you for the listener of game.
+usageNSingle=newgame - Start a new Single game.
+usageNVersus=newgame <player> [level] - Start a new Versus game.
+usageRanking=rank - Show score ranking.
+usageSet=set <number> - When starting a Versus game, you can set your Number.
 
-canceled=HitAndBlow was canceled.
 versusCancelReturn=Returned %.2f%s to your funds.
-
-singleWonPay1=You won the game by %d turn of Call.
-singleWonPay2=You got prize money %.2f%s.
-
-versusNewgameSend=You sent a game to %s.
+versusCannotAccept=It is not applied to you for a game now.
+versusDontHaveFunds=You don't have funds %.2f%s.
+versusLevelWasnotInt=Set the level [2-7].
+versusLost=You lost a game.
 versusNewgameReceive1=New Versus game arrived from %s.
 versusNewgameReceive2=%.2f%s is necessary to receive a game. Do you receive a game?
 versusNewgameReceive3=Please run "/hb accept" to receive a game.
-
+versusNewgameSend=You sent a game to %s.
+versusNotPlayerInGame=There is not you in play games now.
+versusOffline=The partner player is offline.
+versusPartnerInGame=A partner player is playing a game.
 versusPartnerNotHaveFunds=%s do not have funds %.2f%s.
+versusSelf=You cannot set yourself for a partner player.
+versusSet=%s set Number.
+versusSetNumber=Please set your Number. /%s set [Number]
+versusSetNumberFigures=Please set the Number of %d figures.
+versusSetNumberSame=You cannot include the same number.
 versusStarting1=You paid %.2f%s.
 versusStarting2=Please set Number. /hb set [Number of %d figures]
-
-versusSet=%s set Number.
-
-announceVersusStart=%s and %s started a game.
 versusStarting3=Starting a game. Let's break Number!
-
 versusTurnStart1=%s's turn.
 versusTurnStart2=Please Call Number.
 versusTurnStart3=/hb call [Number of %d figures]
-
 versusWon=You won the game. Congratulations!
-versusLost=You lost a game.
-announceVersusEnd=%s won to %s by %d turn of Call.
-
-listenerAdded=Added you to the listener of game %s.
-listenerCanceled=Game %s was canceled.
-listenerAlreadyAdded=Already you listen game %s.
-listenerNotAdded=You are not the listener of any game.
-listenerPlayer=You are the player of game %s.
-listenerSetName=Please set the game name.
-listenerNotFound=Not found game %s.
-listenerExited=Exited from listening of game %s.
-
-phaseSingle=Single Game
-phaseVersusPrepare=Versus Game - Prepare
-phaseVersusSetnumber=Versus Game - Setting answers
-phaseVersusYourTurn=Your turn
-phaseVersusOtherTurn=Partner's turn
-phaseVersusCallTurn=%s's turn
-phaseEnded=Game ended
-phaseCanced=Game canceled

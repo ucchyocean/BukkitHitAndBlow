@@ -1,98 +1,85 @@
-cannotRunOnConsole=コンソールからは実行できないコマンドです。
+announceSingleEnd=%sさんが%d回目のコールで勝利しました。
+announceSingleStart=%sさんがゲームを開始しました。
+announceVersusEnd=%sさんが%sさんに、%d回目のコールで勝利しました。
+announceVersusStart=%sさんと%sさんがゲームを開始しました。
+
+canceled=HitAndBlowがキャンセルされました。
 cannotRunInGame=ゲーム中にこのコマンドは実行できません。
+cannotRunOnConsole=コンソールからは実行できないコマンドです。
 
-singleExpire=本日のゲームプレイ回数を越えました。
-singleTimes=本日、%d回目のゲームです。
-singleLeast=あと%d回、ゲームができます。
-
-versusOffline=相手プレイヤーはオフラインです。
-versusPartnerInGame=相手プレイヤーがゲーム中です。
-versusSelf=対戦相手には自分を指定できません。
-
-versusDontHaveFunds=掛け金%.2f%sがありません。
-versusCannotAccept=あなたは現在ゲームを申請されていません。
-versusNotPlayerInGame=あなたは現在対戦ゲーム中ではありません。
-versusLevelWasnotInt=levelには2から7までの数字を指定してください。
-
-versusSetNumber=Numberを指定してください。/%s set [Number]
-versusSetNumberFigures=%d桁の数字を指定してください。
-versusSetNumberSame=同じ数字を含めることはできません。
+listenerAdded=ゲーム%sの観戦をします。
+listenerAlreadyAdded=あなたは既にゲーム%sを観戦しています。
+listenerCanceled=ゲーム%sがキャンセルされました。
+listenerExited=ゲーム%sの観戦から退出しました。
+listenerNotAdded=あなたはゲームを観戦していません。
+listenerNotFound=ゲーム%sが見つかりませんでした。
+listenerPlayer=あなたはゲーム%sのプレイヤーです。
+listenerSetName=ゲーム名を指定してください。
 
 notPlayerForCall=あなたはCallできるプレイヤーではありません。
-pleaseCall=Numberを指定してください。/%s call [Number]
-
 notPlayerForCancel=あなたはCancelできるプレイヤーではありません。
-
 notPlayerInGame=あなたはゲーム中のプレイヤーではありません。
 
-usageNSingle=newgame 新しいシングルゲームを開始します。
-usageNVersus=newgame <player> [level] 新しい対戦ゲームを開始します。
-usageAccept=accept ゲームの申請を受けます。
-usageSet=set <number> ゲーム開始時に、自分の番号を設定します。
-usageCall=call <number> 自分のターン時に、NumberをCallします。
-usageCancel=cancel ゲーム申請時に、申請したゲームをキャンセルします。
-usageHist=hist ゲーム中の時に、Call履歴を表示します。
-usageHistory=history ゲーム中の時に、Call履歴を表示します。
-usageRanking=rank スコアランキングを参照します。
-usageList=list 現在行われているゲームを一覧表示します。
-usageListen=listen <game name> 現在行われているゲームの観戦をします。
-usageExitListen=exitListen ゲームの観戦をやめます。
+phaseCanced=ゲームキャンセル
+phaseEnded=ゲーム終了
+phaseSingle=シングルゲーム
+phaseVersusCallTurn=%sさんのターン
+phaseVersusOtherTurn=相手のターン
+phaseVersusPrepare=対戦ゲーム 準備中
+phaseVersusSetnumber=対戦ゲーム 答え設定中
+phaseVersusYourTurn=あなたのターン
 
-announceSingleStart=%sさんがゲームを開始しました。
+pleaseCall=Numberを指定してください。/%s call [Number]
+
+singleExpire=本日のゲームプレイ回数を越えました。
+singleLeast=あと%d回、ゲームができます。
 singleStarting=ゲームを開始します。Let's break Number!
-
+singleTimes=本日、%d回目のゲームです。
 singleTurnStart1=%d回目のターンです。Numberをコールしてください。
 singleTurnStart2=/hb call [%d桁の数字]
+singleWon=あなたの勝ちです。おめでとうございます！
+singleWonPay1=%d回目で当てました。
+singleWonPay2=賞金%.2f%sを支払います。
 
 turnCalled1=%s さんが %s をコール。
 turnCalled2=%s は、%d Hit、%d Blow です。
 turnCalled3=%s は、%d Hit です。
 
-singleWon=あなたの勝ちです。おめでとうございます！
-announceSingleEnd=%sさんが%d回目のコールで勝利しました。
+usageAccept=accept ゲームの申請を受けます。
+usageCall=call <number> 自分のターン時に、NumberをCallします。
+usageCancel=cancel ゲーム申請時に、申請したゲームをキャンセルします。
+usageExitListen=exitListen ゲームの観戦をやめます。
+usageHist=hist ゲーム中の時に、Call履歴を表示します。
+usageHistory=history ゲーム中の時に、Call履歴を表示します。
+usageList=list 現在行われているゲームを一覧表示します。
+usageListen=listen <game name> 現在行われているゲームの観戦をします。
+usageNSingle=newgame 新しいシングルゲームを開始します。
+usageNVersus=newgame <player> [level] 新しい対戦ゲームを開始します。
+usageRanking=rank スコアランキングを参照します。
+usageSet=set <number> ゲーム開始時に、自分の番号を設定します。
 
-canceled=HitAndBlowがキャンセルされました。
 versusCancelReturn=掛け金%.2f%sを返却します。
-
-singleWonPay1=%d回目で当てました。
-singleWonPay2=賞金%.2f%sを支払います。
-
-versusNewgameSend=%s さんにHitAndBlowの挑戦を送りました。
+versusCannotAccept=あなたは現在ゲームを申請されていません。
+versusDontHaveFunds=掛け金%.2f%sがありません。
+versusLevelWasnotInt=levelには2から7までの数字を指定してください。
+versusLost=あなたの負けです。
 versusNewgameReceive1=%s さんからHitAndBlowの挑戦が届きました。
 versusNewgameReceive2=ゲームを受けるには、掛け金%.2f%sが必要です。ゲームを受けますか？
 versusNewgameReceive3=ゲームを受けるには、/hb accept を実行してください。
-
+versusNewgameSend=%s さんにHitAndBlowの挑戦を送りました。
+versusNotPlayerInGame=あなたは現在対戦ゲーム中ではありません。
+versusOffline=相手プレイヤーはオフラインです。
+versusPartnerInGame=相手プレイヤーがゲーム中です。
 versusPartnerNotHaveFunds=%s さんは掛け金%.2f%sが足りません。
+versusSelf=対戦相手には自分を指定できません。
+versusSet=%s さんがNumberを設定しました。
+versusSetNumber=Numberを指定してください。/%s set [Number]
+versusSetNumberFigures=%d桁の数字を指定してください。
+versusSetNumberSame=同じ数字を含めることはできません。
 versusStarting1=掛け金%.2f%sを支払いました。ゲームを開始します。
 versusStarting2=Numberを設定してください。/hb set [%d桁の数字]
-
-versusSet=%s さんがNumberを設定しました。
-
-announceVersusStart=%sさんと%sさんがゲームを開始しました。
 versusStarting3=ゲームを開始します。Let's break Number!
-
 versusTurnStart1=%s さんのターンです。
 versusTurnStart2=Numberをコールしてください。
 versusTurnStart3=/hb call [%d桁の数字]
-
 versusWon=あなたの勝ちです。おめでとうございます！
-versusLost=あなたの負けです。
-announceVersusEnd=%sさんが%sさんに、%d回目のコールで勝利しました。
-
-listenerAdded=ゲーム%sの観戦をします。
-listenerCanceled=ゲーム%sがキャンセルされました。
-listenerAlreadyAdded=あなたは既にゲーム%sを観戦しています。
-listenerNotAdded=あなたはゲームを観戦していません。
-listenerPlayer=あなたはゲーム%sのプレイヤーです。
-listenerSetName=ゲーム名を指定してください。
-listenerNotFound=ゲーム%sが見つかりませんでした。
-listenerExited=ゲーム%sの観戦から退出しました。
-
-phaseSingle=シングルゲーム
-phaseVersusPrepare=対戦ゲーム 準備中
-phaseVersusSetnumber=対戦ゲーム 答え設定中
-phaseVersusYourTurn=あなたのターン
-phaseVersusOtherTurn=相手のターン
-phaseVersusCallTurn=%sさんのターン
-phaseEnded=ゲーム終了
-phaseCanced=ゲームキャンセル
