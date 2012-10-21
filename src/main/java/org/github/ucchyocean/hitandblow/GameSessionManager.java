@@ -2,6 +2,7 @@ package org.github.ucchyocean.hitandblow;
 
 import java.util.Vector;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 public class GameSessionManager {
@@ -22,6 +23,11 @@ public class GameSessionManager {
 
 		cleanSessions();
 		sessions.remove(session);
+	}
+
+	public static Vector<GameSession> getSessions() {
+
+		return sessions;
 	}
 
 	public static boolean isPlayerForAccept(Player player) {
@@ -48,9 +54,9 @@ public class GameSessionManager {
 		return (session != null && session.isPlayerForCancel(player));
 	}
 
-	public static boolean isPlayerForHistory(Player player) {
+	public static boolean isCommandSenderForHistory(CommandSender sender) {
 
-		GameSession session = getSessionByPlayer(player);
+		GameSession session = getSessionByPlayerAndListener(sender);
 		return (session != null);
 	}
 
@@ -82,7 +88,7 @@ public class GameSessionManager {
 			try {
 				session.callNumber(player, number);
 				return true;
-			} catch (HitAndBlowException e) {
+			} catch (Exception e) {
 				e.printStackTrace();
 				return false;
 			}
@@ -102,11 +108,11 @@ public class GameSessionManager {
 		return false;
 	}
 
-	public static boolean printHistoryByPlayer(Player player) {
+	public static boolean printHistoryByPlayer(CommandSender sender) {
 
-		GameSession session = getSessionByPlayer(player);
+		GameSession session = getSessionByPlayerAndListener(sender);
 		if ( session != null ) {
-			session.printHistory(player);
+			session.printHistory(sender);
 			return true;
 		}
 
@@ -128,6 +134,33 @@ public class GameSessionManager {
 				if ( vs.player2.equals(player) ) {
 					return vs;
 				}
+			}
+		}
+
+		return null;
+	}
+
+	public static GameSession getSessionByPlayerAndListener(CommandSender sender) {
+
+		for ( GameSession s : sessions ) {
+			if ( s.player1.equals(sender) || s.listeners.contains(sender) ) {
+				return s;
+			} else if ( s instanceof VersusGameSession ) {
+				VersusGameSession vs = (VersusGameSession)s;
+				if ( vs.player2.equals(sender) ) {
+					return vs;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	public static GameSession getSessionByListener(CommandSender sender) {
+
+		for ( GameSession s : sessions ) {
+			if ( s.listeners.contains(sender) ) {
+				return s;
 			}
 		}
 
@@ -159,20 +192,42 @@ public class GameSessionManager {
 		return null;
 	}
 
+	public static GameSession getSessionByName(String name) {
+
+		for ( GameSession s : sessions ) {
+			if ( s.name.equalsIgnoreCase(name) ) {
+				return s;
+			}
+		}
+
+		return null;
+	}
+
 	private static void cleanSessions() {
 
 		for ( GameSession s : sessions ) {
-			if ( !s.player1.isOnline() ) {
+			if ( !isValidPlayer(s.player1) ) {
 				s.cancelGame();
-				System.out.println(String.format("[%s] Game %s was canceled.", HitAndBlow.NAME, s.name));
+				//System.out.println(String.format("[%s] Game %s was canceled.", HitAndBlowPlugin.NAME, s.name));
 			}
 			if ( s instanceof VersusGameSession ) {
 				VersusGameSession vs = (VersusGameSession)s;
-				if ( !vs.player2.isOnline() ) {
+				if ( !isValidPlayer(vs.player2) ) {
 					s.cancelGame();
-					System.out.println(String.format("[%s] Game %s was canceled.", HitAndBlow.NAME, s.name));
+					//System.out.println(String.format("[%s] Game %s was canceled.", HitAndBlowPlugin.NAME, s.name));
 				}
 			}
 		}
+	}
+
+	private static boolean isValidPlayer(Player player) {
+
+		if ( player == null )
+			return false;
+		if ( !player.isOnline() )
+			return false;
+		if ( !player.equals( HitAndBlowPlugin.instance.getPlayer(player.getName()) ) )
+			return false;
+		return true;
 	}
 }

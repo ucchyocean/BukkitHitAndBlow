@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.github.ucchyocean.misc.Resources;
 
@@ -25,9 +26,9 @@ public class SingleGameSession extends GameSession {
 		phase = GamePhase.SINGLE_CALL;
 		makeAnswer();
 
-		if ( HitAndBlow.getAnnounce() ) {
+		if ( HitAndBlowPlugin.getAnnounce() ) {
 			Bukkit.broadcastMessage(ChatColor.GRAY +
-					String.format("[" + HitAndBlow.NAME + "] " + Resources.get("announceSingleStart"),
+					String.format("[" + HitAndBlowPlugin.NAME + "] " + Resources.get("announceSingleStart"),
 							player.getName()));
 		}
 
@@ -51,7 +52,9 @@ public class SingleGameSession extends GameSession {
 	@Override
 	protected void callNumber(Player player, String number) {
 
-		printP1( String.format(Resources.get("turnCalled1"), player.getName(), number) );
+		String message = String.format(Resources.get("turnCalled1"), player.getName(), number);
+		printP1(message);
+		printToListeners(message);
 
 		int[] call = parseS2I(number);
 		int[] score = checkEatBite(p2answer, call);
@@ -60,20 +63,20 @@ public class SingleGameSession extends GameSession {
 		p1scoreHistory.add(score);
 
 		if ( score[0] < level ) {
-			printP1(String.format(
-					Resources.get("turnCalled2"),
-					number, score[0], score[1]) );
+			message = String.format(Resources.get("turnCalled2"), number, score[0], score[1]);
+			printP1(message);
+			printToListeners(message);
 			runCallPhase();
 		} else {
-			printP1(String.format(
-					Resources.get("turnCalled3"),
-					number, score[0]) );
+			message = String.format(Resources.get("turnCalled3"), number, score[0]);
+			printP1(message);
+			printToListeners(message);
 
 			printP1(ChatColor.GOLD + Resources.get("singleWon"));
 			payReward(player1);
 
-			if ( HitAndBlow.getAnnounce() ) {
-				Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlow.NAME + "] " +
+			if ( HitAndBlowPlugin.getAnnounce() ) {
+				Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlowPlugin.NAME + "] " +
 						String.format(Resources.get("announceSingleEnd"),
 								player.getName(), p1codeHistory.size() ));
 			}
@@ -86,28 +89,29 @@ public class SingleGameSession extends GameSession {
 	protected void cancelGame() {
 
 		printP1(ChatColor.RED + Resources.get("canceled"));
+		printToListeners( String.format(Resources.get("listenerCanceled"), name) );
 		super.cancelGame();
 	}
 
 	private void payReward(Player player) {
 
-		List<Double> rewards = HitAndBlow.getSingleRewards();
+		List<Double> rewards = HitAndBlowPlugin.getSingleRewards();
 		int times = p1codeHistory.size();
-		String unit = HitAndBlow.accountHandler.getUnitsPlural();
+		String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
 
 		printP1(String.format( Resources.get("singleWonPay1"), times ));
 
 		if ( times <= rewards.size() ) {
 			Double reward = rewards.get(times-1);
 			printP1(String.format( Resources.get("singleWonPay2"), reward, unit ));
-			HitAndBlow.accountHandler.addMoney(player.getName(), reward);
+			HitAndBlowPlugin.accountHandler.addMoney(player.getName(), reward);
 
 			UserConfiguration.addScore(player.getName(), reward);
 		}
 	}
 
 	@Override
-	protected Vector<String> getHistory(Player player) {
+	protected Vector<String> getHistory(CommandSender sender) {
 
 		Vector<String> history = new Vector<String>();
 
@@ -122,7 +126,7 @@ public class SingleGameSession extends GameSession {
 				p1codeHistory.elementAt(i), p1score[0], p1score[1] ));
 		}
 
-		if ( p2answer != null && player == null ) {
+		if ( p2answer != null && sender == null ) {
 			history.add("------- answer -------");
 			history.add(String.format("%s", parseI2S(p2answer) ));
 		}
@@ -144,7 +148,7 @@ public class SingleGameSession extends GameSession {
 		return "unknown game phase";
 	}
 
-	/* (非 Javadoc)
+	/**
 	 * @see org.github.ucchyocean.GameSession#isPlayerForSet(org.bukkit.entity.Player)
 	 */
 	@Override
@@ -152,7 +156,7 @@ public class SingleGameSession extends GameSession {
 		return false;
 	}
 
-	/* (非 Javadoc)
+	/**
 	 * @see org.github.ucchyocean.GameSession#isPlayerForCall(org.bukkit.entity.Player)
 	 */
 	@Override
@@ -160,7 +164,7 @@ public class SingleGameSession extends GameSession {
 		return phase.equals(GamePhase.SINGLE_CALL);
 	}
 
-	/* (非 Javadoc)
+	/**
 	 * @see org.github.ucchyocean.GameSession#isPlayerForCancel(org.bukkit.entity.Player)
 	 */
 	@Override
@@ -191,5 +195,10 @@ public class SingleGameSession extends GameSession {
 			}
 		}
 		return true;
+	}
+
+	public String toString() {
+
+		return name + " - " + getPhaseForPrint(phase);
 	}
 }

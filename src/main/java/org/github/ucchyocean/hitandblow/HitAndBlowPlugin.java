@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 import org.bukkit.configuration.Configuration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.github.ucchyocean.misc.AccountHandler;
 import org.github.ucchyocean.misc.Resources;
@@ -22,7 +23,7 @@ import org.github.ucchyocean.misc.Resources;
  * @author ucchy
  *
  */
-public class HitAndBlow extends JavaPlugin {
+public class HitAndBlowPlugin extends JavaPlugin {
 
 	public static final String NAME = "HitAndBlow";
 
@@ -47,6 +48,8 @@ public class HitAndBlow extends JavaPlugin {
 
 	private HitAndBlowCommandExecutor executor;
 
+	protected static HitAndBlowPlugin instance;
+
 	/**
 	 *
 	 * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
@@ -54,11 +57,12 @@ public class HitAndBlow extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
+		instance = this;
 		logger = this.getLogger();
 
 		try {
 			accountHandler = new AccountHandler();
-		} catch (HitAndBlowException e) {
+		} catch (Exception e) {
 			logger.severe(e.getLocalizedMessage());
 			e.printStackTrace();
 			getServer().getPluginManager().disablePlugin(this);
@@ -75,6 +79,9 @@ public class HitAndBlow extends JavaPlugin {
 
 		executor = new HitAndBlowCommandExecutor();
 		getCommand("hb").setExecutor(executor);
+
+		PlayerLogoutListener listener = new PlayerLogoutListener();
+		getServer().getPluginManager().registerEvents(listener, this);
 
 		GameLogFolder = this.getDataFolder() + File.separator + GameLogFolderName;
 		UserFolder = this.getDataFolder() + File.separator + UserFolderName;
@@ -95,19 +102,19 @@ public class HitAndBlow extends JavaPlugin {
 	private void initResource(String lang) {
 
 		File jaFile = new File(getDataFolder() + File.separator +
-				HitAndBlow.LangFolderName + File.separator + "ja.txt");
+				HitAndBlowPlugin.LangFolderName + File.separator + "ja.txt");
 		if ( !jaFile.exists() ) {
 			copyFileFromJar(jaFile, "ja.txt");
 	    }
 
 		File enFile = new File(getDataFolder() + File.separator +
-				HitAndBlow.LangFolderName + File.separator + "en.txt");
+				HitAndBlowPlugin.LangFolderName + File.separator + "en.txt");
 		if ( !enFile.exists() ) {
 			copyFileFromJar(enFile, "en.txt");
 	    }
 
 		Resources.initialize(getDataFolder() + File.separator +
-				HitAndBlow.LangFolderName + File.separator + lang + ".txt");
+				HitAndBlowPlugin.LangFolderName + File.separator + lang + ".txt");
 	}
 
 	public static List<Double> getSingleRewards() {
@@ -196,5 +203,9 @@ public class HitAndBlow extends JavaPlugin {
 		}
     }
 
+    protected Player getPlayer(String name) {
+
+    	return getServer().getPlayer(name);
+    }
 
 }

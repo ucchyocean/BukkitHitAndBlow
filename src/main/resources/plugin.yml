@@ -1,6 +1,6 @@
 name: HitAndBlow
-main: org.github.ucchyocean.hitandblow.HitAndBlow
-version: 0.2.0
+main: org.github.ucchyocean.hitandblow.HitAndBlowPlugin
+version: 1.0.0
 authors: [ucchy]
 load: startup
 description: Minecraft Hit And Blow Game.
@@ -9,8 +9,8 @@ commands:
     description: Minecraft Hit And Blow Game.
     usage: |
            /<command> - Minecraft Hit And Blow Game Command.
-    permission: org.ucchy.hitandblow
+    permission: hitandblow
     permission-message: You don't have permission <permission>
 permissions:
-  org.ucchy.hitandblow:
+  hitandblow:
     description: Minecraft Hit And Blow Game command.

@@ -41,12 +41,12 @@ public class UserConfiguration extends HashMap<String, Object> {
 
 	private static UserConfiguration getUserConfiguration(String name) {
 
-	    File folder = new File(HitAndBlow.UserFolder);
+	    File folder = new File(HitAndBlowPlugin.UserFolder);
 	    if ( !folder.exists() ) {
 	    	folder.mkdirs();
 	    }
 
-	    File file = new File(HitAndBlow.UserFolder + File.separator + name + ".yml");
+	    File file = new File(HitAndBlowPlugin.UserFolder + File.separator + name + ".yml");
 	    if ( !file.exists() ) {
 	    	UserConfiguration conf = new UserConfiguration();
 	    	conf.save(file);
@@ -57,7 +57,7 @@ public class UserConfiguration extends HashMap<String, Object> {
 
 	private void save(String name) {
 
-		File file = new File(HitAndBlow.UserFolder + File.separator + name + ".yml");
+		File file = new File(HitAndBlowPlugin.UserFolder + File.separator + name + ".yml");
 		save(file);
 	}
 
@@ -165,7 +165,7 @@ public class UserConfiguration extends HashMap<String, Object> {
 
     	Vector<ScoreData> arr = new Vector<ScoreData>();
 
-	    File folder = new File(HitAndBlow.UserFolder);
+	    File folder = new File(HitAndBlowPlugin.UserFolder);
 	    if ( !folder.exists() ) {
 	    	folder.mkdirs();
 	    }

@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Vector;
 
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -26,6 +27,8 @@ public abstract class GameSession {
 
 	protected String name;
 	protected Player player1;
+	protected Vector<CommandSender> listeners;
+	protected String startDate;
 
 	protected GamePhase phase;
 	protected int level;
@@ -36,10 +39,12 @@ public abstract class GameSession {
 	public GameSession(Player player1, int level) {
 
 		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
-		this.name = player1.getName() + "-" + format.format(new Date());
+		this.startDate = format.format(new Date());
+		this.name = player1.getName();
 
 		this.player1 = player1;
 		this.level = level;
+		this.listeners = new Vector<CommandSender>();
 
 		this.p1scoreHistory = new Vector<int[]>();
 		this.p1codeHistory = new Vector<String>();
@@ -66,9 +71,16 @@ public abstract class GameSession {
 		printTo(player1, message);
 	}
 
-	protected void printTo(Player player, String message) {
+	protected void printToListeners(String message) {
 
-		player.sendMessage(String.format("[%s] %s", HitAndBlow.NAME, message));
+		for ( CommandSender p : listeners ) {
+			printTo(p, message);
+		}
+	}
+
+	protected void printTo(CommandSender player, String message) {
+
+		player.sendMessage(String.format("[%s] %s", HitAndBlowPlugin.NAME, message));
 	}
 
 	protected int[] checkEatBite(int[] answer, int[] call) {
@@ -107,13 +119,14 @@ public abstract class GameSession {
 
 		List<String> contents = getHistory(null);
 
-		File logFileFolder = new File(HitAndBlow.GameLogFolder);
+		File logFileFolder = new File(HitAndBlowPlugin.GameLogFolder);
 
 		if ( !logFileFolder.exists() ) {
 			logFileFolder.mkdirs();
 		}
 
-		File logFile = new File(HitAndBlow.GameLogFolder + File.separator + name + ".log");
+		String filename = String.format("%s-%s.log", name, startDate);
+		File logFile = new File(HitAndBlowPlugin.GameLogFolder + File.separator + filename);
 
 		try {
 			BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.getAbsolutePath()));
@@ -124,8 +137,8 @@ public abstract class GameSession {
 			writer.flush();
 			writer.close();
 		} catch (IOException e) {
-			HitAndBlow.logger.severe("Could not write game log file.");
-			HitAndBlow.logger.severe(e.getLocalizedMessage());
+			HitAndBlowPlugin.logger.severe("Could not write game log file.");
+			HitAndBlowPlugin.logger.severe(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
 	}
@@ -161,18 +174,29 @@ public abstract class GameSession {
 		return str.toString();
 	}
 
-	protected void printHistory(Player player) {
+	protected void printHistory(CommandSender sender) {
 
-		List<String> messages = getHistory(player);
+		List<String> messages = getHistory(sender);
 
 		for ( String m : messages ) {
-			player.sendMessage(ChatColor.GRAY + m);
+			sender.sendMessage(ChatColor.GRAY + m);
 		}
 	}
 
-	protected abstract List<String> getHistory(Player player);
+	protected void addListener(CommandSender player) {
+
+		listeners.add(player);
+	}
+
+	protected void removeListener(CommandSender player) {
+
+		listeners.remove(player);
+	}
+
+	protected abstract List<String> getHistory(CommandSender sender);
 	protected abstract void callNumber(Player player, String number) throws HitAndBlowException;
 	protected abstract boolean isPlayerForSet(Player player);
 	protected abstract boolean isPlayerForCall(Player player);
 	protected abstract boolean isPlayerForCancel(Player player);
+	public abstract String toString();
 }

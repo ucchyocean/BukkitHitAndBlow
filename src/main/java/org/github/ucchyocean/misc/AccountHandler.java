@@ -1,23 +1,21 @@
 package org.github.ucchyocean.misc;
 
-import net.milkbowl.vault.Vault;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
-import org.github.ucchyocean.hitandblow.HitAndBlowException;
 
 public class AccountHandler {
 
     public static Economy econ = null;
     public static Permission perms = null;
 
-    public AccountHandler() throws HitAndBlowException {
+    public AccountHandler() throws Exception {
 
     	Plugin plugin = Bukkit.getServer().getPluginManager().getPlugin("Vault");
-    	if ( !(plugin instanceof Vault) ) {
-    		throw new HitAndBlowException("Vault was not loaded!");
+    	if ( plugin == null ) {
+    		throw new Exception("Vault was not loaded!");
     	}
     	econ = Bukkit.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }

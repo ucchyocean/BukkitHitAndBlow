@@ -25,14 +25,72 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 	public boolean onCommand(
 			CommandSender sender, Command command, String label, String[] args) {
 
-		String prefix = String.format("[%s] ", HitAndBlow.NAME);
+		String prefix = String.format("[%s] ", HitAndBlowPlugin.NAME);
 		String preErr = ChatColor.DARK_RED + prefix;
 
 		if ( !(sender instanceof Player) ) {
 
-			if ( args.length > 0 && args[0].equalsIgnoreCase("rank") ) {
-				printRanking(sender);
-				return true;
+			if ( args.length >= 1 ) {
+
+				if ( args[0].equalsIgnoreCase("hist") || args[0].equalsIgnoreCase("history") ) {
+
+					if ( !GameSessionManager.isCommandSenderForHistory(sender) ) {
+						sender.sendMessage(preErr + Resources.get("notPlayerInGame"));
+						return true;
+					}
+
+					return GameSessionManager.printHistoryByPlayer(sender);
+
+				} if ( args[0].equalsIgnoreCase("rank") ) {
+
+					printRanking(sender);
+					return true;
+
+				} else if ( args[0].equalsIgnoreCase("list") ) {
+
+					printList(sender);
+					return true;
+
+				} else if ( args[0].equalsIgnoreCase("listen") ) {
+
+					if ( args.length < 2 ) {
+						sender.sendMessage(preErr + Resources.get("listenerSetName"));
+						return true;
+					}
+
+					String gamename = args[1];
+					GameSession session = GameSessionManager.getSessionByName(gamename);
+
+					if ( session == null ) {
+						sender.sendMessage(preErr + Resources.get("listenerNotFound"));
+						return true;
+					}
+
+					GameSession already = GameSessionManager.getSessionByListener(sender);
+					if ( already != null ) {
+						sender.sendMessage(preErr +
+								String.format(Resources.get("listenerAlreadyAdded"), already.name) );
+						return true;
+					}
+
+					session.addListener(sender);
+					sender.sendMessage( String.format(Resources.get("listenerAdded"), gamename) );
+					return true;
+
+				} else if ( args[0].equalsIgnoreCase("exitlisten") ) {
+
+					GameSession session = GameSessionManager.getSessionByListener(sender);
+
+					if ( session == null ) {
+						sender.sendMessage(preErr + Resources.get("listenerNotAdded"));
+						return true;
+					}
+
+					session.removeListener(sender);
+					sender.sendMessage( String.format(Resources.get("listenerExited"), session.name) );
+					return true;
+
+				}
 			}
 
 			sender.sendMessage(preErr + Resources.get("cannotRunOnConsole"));
@@ -56,27 +114,28 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 			if ( args.length < 2 ) {
 				// Single game mode.
 
-				if ( HitAndBlow.getSingleDialyTimes() != 0 ) {
+				if ( HitAndBlowPlugin.getSingleDialyTimes() != 0 ) {
 					int times = UserConfiguration.getUserDailyPlayTimes(player.getName());
-					if ( HitAndBlow.getSingleDialyTimes() <= times ) {
+					if ( HitAndBlowPlugin.getSingleDialyTimes() <= times ) {
 						sender.sendMessage(preErr + Resources.get("singleExpire"));
 						return true;
 					}
 					sender.sendMessage(prefix + String.format(Resources.get("singleTimes"), times+1));
 					sender.sendMessage(prefix + String.format(Resources.get("singleLeast"),
-							(HitAndBlow.getSingleDialyTimes() - times)));
+							(HitAndBlowPlugin.getSingleDialyTimes() - times)));
 
 					UserConfiguration.addUserDailyPlayTimes(player.getName());
 				}
 
-				new SingleGameSession(player, HitAndBlow.getSingleLevel());
+				new SingleGameSession(player, HitAndBlowPlugin.getSingleLevel());
 				return true;
 
 			} else {
 				// Versus game mode.
 
-				Double stake = HitAndBlow.getVersusStake();
-				String unit = HitAndBlow.accountHandler.getUnitsPlural();
+				Double stake = HitAndBlowPlugin.getVersusStake();
+				String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
+				int level = HitAndBlowPlugin.getVersusLevel();
 
 				Player other = (Bukkit.getServer().getPlayer(args[1]));
 				if ( other == null ) {
@@ -90,12 +149,18 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 					return true;
 				}
 
-				if ( !HitAndBlow.accountHandler.hasFunds(player.getName(), stake) ) {
+				if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
 					sender.sendMessage(preErr + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
 					return true;
 				}
 
-				VersusGameSession session = new VersusGameSession(player, other, HitAndBlow.getVersusLevel());
+				if ( args.length >= 3 ) {
+					if ( args[2].matches("[2-7]") ) {
+						level = Integer.parseInt(args[2]);
+					}
+				}
+
+				VersusGameSession session = new VersusGameSession(player, other, level);
 
 				session.runPreparePhase();
 
@@ -109,10 +174,10 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 				return true;
 			}
 
-			Double stake = HitAndBlow.getVersusStake();
-			String unit = HitAndBlow.accountHandler.getUnitsPlural();
+			Double stake = HitAndBlowPlugin.getVersusStake();
+			String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
 
-			if ( !HitAndBlow.accountHandler.hasFunds(player.getName(), stake) ) {
+			if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
 				sender.sendMessage(preErr + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
 				return true;
 			}
@@ -202,7 +267,7 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 
 		} else if ( args[0].equalsIgnoreCase("hist") || args[0].equalsIgnoreCase("history") ) {
 
-			if ( !GameSessionManager.isPlayerForHistory(player) ) {
+			if ( !GameSessionManager.isCommandSenderForHistory(player) ) {
 				sender.sendMessage(preErr + Resources.get("notPlayerInGame"));
 				return true;
 			}
@@ -213,6 +278,64 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 
 			printRanking(sender);
 			return true;
+
+		} else if ( args[0].equalsIgnoreCase("list") ) {
+
+			printList(sender);
+			return true;
+
+		} else if ( args[0].equalsIgnoreCase("listen") ) {
+
+			if ( args.length < 2 ) {
+				sender.sendMessage(preErr + Resources.get("listenerSetName"));
+				return true;
+			}
+
+			String gamename = args[1];
+			GameSession session = GameSessionManager.getSessionByName(gamename);
+
+			if ( session == null ) {
+				sender.sendMessage(preErr +
+						String.format(Resources.get("listenerNotFound"), gamename) );
+				return true;
+			}
+
+			if ( session.player1.equals(sender) ) {
+				sender.sendMessage(preErr +
+						String.format(Resources.get("listenerPlayer"), gamename) );
+				return true;
+			} else if ( session instanceof VersusGameSession ) {
+				if ( ((VersusGameSession)session).player2.equals(sender) ) {
+					sender.sendMessage(preErr +
+							String.format(Resources.get("listenerPlayer"), gamename) );
+					return true;
+				}
+			}
+
+			GameSession already = GameSessionManager.getSessionByListener(sender);
+			if ( already != null ) {
+				sender.sendMessage(preErr +
+						String.format(Resources.get("listenerAlreadyAdded"), already.name) );
+				return true;
+			}
+
+			session.addListener(sender);
+			sender.sendMessage( String.format(Resources.get("listenerAdded"), gamename) );
+			return true;
+
+		} else if ( args[0].equalsIgnoreCase("exitlisten") ) {
+
+			GameSession session = GameSessionManager.getSessionByListener(sender);
+
+			if ( session == null ) {
+				sender.sendMessage(preErr + Resources.get("listenerNotAdded"));
+				return true;
+			}
+
+			session.removeListener(sender);
+			sender.sendMessage( String.format(Resources.get("listenerExited"), session.name) );
+			return true;
+
 		}
 
 		return false;
@@ -230,6 +353,9 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 		sender.sendMessage(prefix + Resources.get("usageCancel"));
 		sender.sendMessage(prefix + Resources.get("usageHist"));
 		sender.sendMessage(prefix + Resources.get("usageHistory"));
+		sender.sendMessage(prefix + Resources.get("usageRanking"));
+		sender.sendMessage(prefix + Resources.get("usageList"));
+		sender.sendMessage(prefix + Resources.get("usageListen"));
 	}
 
 	private void printRanking(CommandSender sender) {
@@ -249,5 +375,16 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 		for ( int i=0; i<maxToDisplay; i++ ) {
 			sender.sendMessage(prefix + data.elementAt(i).toString());
 		}
+	}
+
+	private void printList(CommandSender sender) {
+
+		String prefix = ChatColor.GRAY.toString() + "";
+		Vector<GameSession> sessions = GameSessionManager.getSessions();
+
+		sender.sendMessage(prefix + "Game Name - Current Status");
+		sender.sendMessage(prefix + "---------------------------");
+		for ( GameSession s : sessions )
+			sender.sendMessage(prefix + s.toString());
 	}
 }

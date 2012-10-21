@@ -1,4 +1,4 @@
-# Hit And Blow 0.2.0
+# Hit And Blow 1.0.0
 # @author     ucchy
 # @license    GPLv2
 # @copyright  Copyright ucchy 2012
@@ -24,7 +24,7 @@ single:
 # Settings for Versus mode game.
 versus:
   
-  # Game level.
+  # Default game level.
   level: 3
   
   # Stake money for versus game.

@@ -8,6 +8,7 @@ import java.util.Vector;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.github.ucchyocean.misc.Resources;
 
@@ -37,7 +38,7 @@ public class VersusGameSession extends GameSession {
 
 	protected void runPreparePhase() {
 
-		String unit = HitAndBlow.accountHandler.getUnitsPlural();
+		String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
 
 		printP1( String.format(Resources.get("versusNewgameSend"),
 				player2.getName()) );
@@ -45,32 +46,32 @@ public class VersusGameSession extends GameSession {
 		printP2( String.format(Resources.get("versusNewgameReceive1"),
 				player2.getName()) );
 		printP2(String.format(Resources.get("versusNewgameReceive2"),
-				HitAndBlow.getVersusStake(), unit));
+				HitAndBlowPlugin.getVersusStake(), unit));
 		printP2(Resources.get("versusNewgameReceive3"));
 	}
 
 	protected boolean runSetNumberPhase() {
 
-		String unit = HitAndBlow.accountHandler.getUnitsPlural();
+		String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
 
-		if ( !HitAndBlow.accountHandler.hasFunds(player1.getName(), HitAndBlow.getVersusStake())) {
+		if ( !HitAndBlowPlugin.accountHandler.hasFunds(player1.getName(), HitAndBlowPlugin.getVersusStake())) {
 			printBoth(String.format(Resources.get("versusPartnerNotHaveFunds"),
-					player1.getName(), HitAndBlow.getVersusStake(), unit));
+					player1.getName(), HitAndBlowPlugin.getVersusStake(), unit));
 			return false;
 		}
-		if ( !HitAndBlow.accountHandler.hasFunds(player2.getName(), HitAndBlow.getVersusStake())) {
+		if ( !HitAndBlowPlugin.accountHandler.hasFunds(player2.getName(), HitAndBlowPlugin.getVersusStake())) {
 			printBoth(String.format(Resources.get("versusPartnerNotHaveFunds"),
-					player2.getName(), HitAndBlow.getVersusStake(), unit));
+					player2.getName(), HitAndBlowPlugin.getVersusStake(), unit));
 			return false;
 		}
 
-		HitAndBlow.accountHandler.chargeMoney(player1.getName(), HitAndBlow.getVersusStake());
-		HitAndBlow.accountHandler.chargeMoney(player2.getName(), HitAndBlow.getVersusStake());
+		HitAndBlowPlugin.accountHandler.chargeMoney(player1.getName(), HitAndBlowPlugin.getVersusStake());
+		HitAndBlowPlugin.accountHandler.chargeMoney(player2.getName(), HitAndBlowPlugin.getVersusStake());
 
 		phase = GamePhase.VERSUS_SETNUMBER;
 
 		printBoth(String.format(Resources.get("versusStarting1"),
-				HitAndBlow.getVersusStake(), unit));
+				HitAndBlowPlugin.getVersusStake(), unit));
 		printBoth(String.format(Resources.get("versusStarting2"),
 				level));
 
@@ -101,13 +102,13 @@ public class VersusGameSession extends GameSession {
 
 	protected void runGamePhase() {
 
-		if ( HitAndBlow.getAnnounce() ) {
-			Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlow.NAME + "] " +
+		if ( HitAndBlowPlugin.getAnnounce() ) {
+			Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlowPlugin.NAME + "] " +
 					String.format(Resources.get("announceVersusStart"),
 							player1.getName(), player2.getName() ));
 		}
 
-		printBoth(ChatColor.GOLD + Resources.get("singleStarting"));
+		printBoth(ChatColor.GOLD + Resources.get("versusStarting3"));
 
 		runCallPhase(player2);
 	}
@@ -120,9 +121,11 @@ public class VersusGameSession extends GameSession {
 			phase = GamePhase.VERSUS_P2CALL;
 		}
 
-		printBoth(String.format(Resources.get("versusTurnStart1"), player.getName()));
+		String message = String.format(Resources.get("versusTurnStart1"), player.getName());
+		printBoth(message);
+		printToListeners(message);
 		printTo(player, ChatColor.RED + Resources.get("versusTurnStart2"));
-		printTo(player, ChatColor.RED + String.format(Resources.get("singleTurnStart2"), level));
+		printTo(player, ChatColor.RED + String.format(Resources.get("versusTurnStart3"), level));
 	}
 
 	@Override
@@ -144,7 +147,9 @@ public class VersusGameSession extends GameSession {
 			throw new HitAndBlowException("Phase was broken!");
 		}
 
-		printBoth( String.format(Resources.get("turnCalled1"), player.getName(), number) );
+		String message = String.format(Resources.get("turnCalled1"), player.getName(), number);
+		printBoth(message);
+		printToListeners(message);
 
 		int[] call = parseS2I(number);
 		int[] score = checkEatBite(answer, call);
@@ -153,26 +158,26 @@ public class VersusGameSession extends GameSession {
 		scoreHistory.add(score);
 
 		if ( score[0] < level ) {
-			printBoth(String.format(
-					Resources.get("turnCalled2"),
-					number, score[0], score[1]) );
+			message = String.format(Resources.get("turnCalled2"), number, score[0], score[1]);
+			printBoth(message);
+			printToListeners(message);
 			if ( phase == GamePhase.VERSUS_P1CALL ) {
 				runCallPhase(player2);
 			} else {
 				runCallPhase(player1);
 			}
 		} else {
-			printBoth(String.format(
-					Resources.get("turnCalled3"),
-					number, score[0]) );
+			message = String.format(Resources.get("turnCalled3"), number, score[0]);
+			printBoth(message);
+			printToListeners(message);
 
 			printTo(player, ChatColor.GOLD + Resources.get("versusWon"));
 			payReward(player);
 
 			printToOther(player, ChatColor.GOLD + Resources.get("versusLost"));
 
-			if ( HitAndBlow.getAnnounce() ) {
-				Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlow.NAME + "] " +
+			if ( HitAndBlowPlugin.getAnnounce() ) {
+				Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlowPlugin.NAME + "] " +
 						String.format(Resources.get("announceVersusEnd"),
 								player.getName(),
 								getOtherPlayer(player).getName(),
@@ -185,10 +190,10 @@ public class VersusGameSession extends GameSession {
 
 	private void payReward(Player player) {
 
-		String unit = HitAndBlow.accountHandler.getUnitsPlural();
-		Double reward = HitAndBlow.getVersusReward();
+		String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
+		Double reward = HitAndBlowPlugin.getVersusReward();
 		printTo(player, String.format( Resources.get("singleWonPay2"), reward, unit ));
-		HitAndBlow.accountHandler.addMoney( player.getName(), reward );
+		HitAndBlowPlugin.accountHandler.addMoney( player.getName(), reward );
 
 		UserConfiguration.addScore(player.getName(), reward);
 	}
@@ -196,9 +201,10 @@ public class VersusGameSession extends GameSession {
 	@Override
 	protected void cancelGame() {
 
-		String unit = HitAndBlow.accountHandler.getUnitsPlural();
+		String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
 
 		printBoth( ChatColor.RED + Resources.get("canceled"));
+		printToListeners( String.format(Resources.get("listenerCanceled"), name) );
 
 		if ( phase.equals(GamePhase.VERSUS_SETNUMBER)
 				|| phase.equals(GamePhase.VERSUS_P1CALL)
@@ -207,13 +213,13 @@ public class VersusGameSession extends GameSession {
 			// returning funds for online player.
 			if ( player1.isOnline() ) {
 				printP1( String.format( Resources.get("versusCancelReturn"),
-						HitAndBlow.getVersusStake(), unit ) );
-				HitAndBlow.accountHandler.addMoney(player1.getName(), HitAndBlow.getVersusStake());
+						HitAndBlowPlugin.getVersusStake(), unit ) );
+				HitAndBlowPlugin.accountHandler.addMoney(player1.getName(), HitAndBlowPlugin.getVersusStake());
 			}
 			if ( player2.isOnline() ) {
 				printP2( String.format( Resources.get("versusCancelReturn"),
-						HitAndBlow.getVersusStake(), unit ) );
-				HitAndBlow.accountHandler.addMoney(player2.getName(), HitAndBlow.getVersusStake());
+						HitAndBlowPlugin.getVersusStake(), unit ) );
+				HitAndBlowPlugin.accountHandler.addMoney(player2.getName(), HitAndBlowPlugin.getVersusStake());
 			}
 		}
 
@@ -279,11 +285,11 @@ public class VersusGameSession extends GameSession {
 	}
 
 	@Override
-	protected Vector<String> getHistory(Player player) {
+	protected Vector<String> getHistory(CommandSender sender) {
 
 		Vector<String> history = new Vector<String>();
 
-		history.add(String.format("Status: %s", getPhaseForPrint(phase, player)));
+		history.add(String.format("Status: %s", getPhaseForPrint(phase, sender)));
 		history.add(String.format("%-10s %-10s",
 				player1.getName(), player2.getName()));
 		history.add("----------------------");
@@ -306,13 +312,13 @@ public class VersusGameSession extends GameSession {
 
 		if ( p1answer != null && p2answer != null ) {
 			history.add("------- answer -------");
-			if ( player == null ) {
+			if ( sender == null ) {
 				history.add(String.format("%s        %s",
 						parseI2S(p2answer), parseI2S(p1answer) ));
-			} else if ( player.equals(player1) ) {
+			} else if ( sender.equals(player1) ) {
 				history.add(String.format("???       %s",
 						parseI2S(p1answer) ));
-			} else if ( player.equals(player2) ) {
+			} else if ( sender.equals(player2) ) {
 				history.add(String.format("%s        ???",
 						parseI2S(p2answer) ));
 			}
@@ -321,27 +327,27 @@ public class VersusGameSession extends GameSession {
 		return history;
 	}
 
-	private String getPhaseForPrint(GamePhase phase, Player player) {
+	private String getPhaseForPrint(GamePhase phase, CommandSender sender) {
 
 		if ( phase.equals(GamePhase.VERSUS_PREPARE) ) {
 			return Resources.get("phaseVersusPrepare");
 		} else if ( phase.equals(GamePhase.VERSUS_SETNUMBER) ) {
 			return Resources.get("phaseVersusSetnumber");
 		} else if ( phase.equals(GamePhase.VERSUS_P1CALL) ) {
-			if ( player1.equals(player) ) {
+			if ( player1.equals(sender) ) {
 				return ChatColor.RED + Resources.get("phaseVersusYourTurn");
-			} else if ( player2.equals(player) ) {
+			} else if ( player2.equals(sender) ) {
 				return Resources.get("phaseVersusOtherTurn");
 			} else {
-				return Resources.get("phaseVersusCallTurn");
+				return String.format(Resources.get("phaseVersusCallTurn"), player1.getName());
 			}
 		} else if ( phase.equals(GamePhase.VERSUS_P2CALL) ) {
-			if ( player1.equals(player) ) {
+			if ( player1.equals(sender) ) {
 				return Resources.get("phaseVersusOtherTurn");
-			} else if ( player2.equals(player) ) {
+			} else if ( player2.equals(sender) ) {
 				return ChatColor.RED + Resources.get("phaseVersusYourTurn");
 			} else {
-				return Resources.get("phaseVersusCallTurn");
+				return String.format(Resources.get("phaseVersusCallTurn"), player2.getName());
 			}
 		} else if ( phase.equals(GamePhase.ENDED) ) {
 			return Resources.get("phaseEnded");
@@ -374,5 +380,11 @@ public class VersusGameSession extends GameSession {
 			return player2;
 		else
 			return player1;
+	}
+
+
+	public String toString() {
+
+		return name + " - " + getPhaseForPrint(phase, null);
 	}
 }
