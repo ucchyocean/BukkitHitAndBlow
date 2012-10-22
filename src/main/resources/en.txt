@@ -4,6 +4,7 @@ announceVersusEnd=%s won to %s by %d turn of Call.
 announceVersusStart=%s and %s started a game.
 
 canceled=HitAndBlow was canceled.
+
 cannotRunInGame=You cannot execute this command during a game.
 cannotRunOnConsole=Cannot execute this command from a console.
 
@@ -61,7 +62,7 @@ usageSet=set <number> - When starting a Versus game, you can set your Number.
 versusCancelReturn=Returned %.2f%s to your funds.
 versusCannotAccept=It is not applied to you for a game now.
 versusDontHaveFunds=You don't have funds %.2f%s.
-versusLevelWasnotInt=Set the level [2-7].
+versusLevelWasnotInt=Set [2-7] to the level.
 versusLost=You lost a game.
 versusNewgameReceive1=New Versus game arrived from %s.
 versusNewgameReceive2=%.2f%s is necessary to receive a game. Do you receive a game?

@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright ucchy 2012
  */
 package org.github.ucchyocean.hitandblow;
 
@@ -14,7 +14,6 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
 import org.bukkit.configuration.Configuration;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.github.ucchyocean.misc.AccountHandler;
 import org.github.ucchyocean.misc.Resources;
@@ -25,151 +24,147 @@ import org.github.ucchyocean.misc.Resources;
  */
 public class HitAndBlowPlugin extends JavaPlugin {
 
-	public static final String NAME = "HitAndBlow";
+    public static final String NAME = "HitAndBlow";
 
-	public static final String KEY_CONF_ANNOUNCE = "announce";
-	public static final String KEY_CONF_LANG = "lang";
-	public static final String KEY_CONF_SINGLE_REWARDS = "single.rewards";
-	public static final String KEY_CONF_SINGLE_LEVEL = "single.level";
-	public static final String KEY_CONF_SINGLE_TIMES = "single.dailyTimes";
-	public static final String KEY_CONF_VERSUS_STAKE = "versus.stake";
-	public static final String KEY_CONF_VERSUS_LEVEL = "versus.level";
-	public static final String KEY_CONF_VERSUS_REWARD = "versus.reward";
+    private static final int MIN_LEVEL = 2;
+    private static final int MAX_LEVEL = 7;
 
-	private static final String GameLogFolderName = "gamelog";
-	private static final String UserFolderName = "user";
-	private static final String LangFolderName = "lang";
+    public static final String KEY_CONF_ANNOUNCE = "announce";
+    public static final String KEY_CONF_LANG = "lang";
+    public static final String KEY_CONF_SINGLE_REWARDS = "single.rewards";
+    public static final String KEY_CONF_SINGLE_LEVEL = "single.level";
+    public static final String KEY_CONF_SINGLE_TIMES = "single.dailyTimes";
+    public static final String KEY_CONF_VERSUS_STAKE = "versus.stake";
+    public static final String KEY_CONF_VERSUS_LEVEL = "versus.level";
+    public static final String KEY_CONF_VERSUS_REWARD = "versus.reward";
 
-	public static String GameLogFolder;
-	public static String UserFolder;
-	public static Logger logger;
-	public static AccountHandler accountHandler;
-	public static Configuration config;
+    private static final String GameLogFolderName = "gamelog";
+    private static final String UserFolderName = "user";
+    private static final String LangFolderName = "lang";
 
-	private HitAndBlowCommandExecutor executor;
+    public static String GameLogFolder;
+    public static String UserFolder;
+    public static Logger logger;
+    public static AccountHandler accountHandler;
+    public static Configuration config;
 
-	protected static HitAndBlowPlugin instance;
+    private HitAndBlowCommandExecutor executor;
 
-	/**
-	 *
-	 * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
-	 */
-	@Override
-	public void onEnable() {
+    protected static HitAndBlowPlugin instance;
 
-		instance = this;
-		logger = this.getLogger();
+    /**
+     * @see org.bukkit.plugin.java.JavaPlugin#onEnable()
+     */
+    @Override
+    public void onEnable() {
 
-		try {
-			accountHandler = new AccountHandler();
-		} catch (Exception e) {
-			logger.severe(e.getLocalizedMessage());
-			e.printStackTrace();
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
+        instance = this;
+        logger = this.getLogger();
 
-		File configFile = new File(getDataFolder(), "config.yml");
-		if ( !configFile.exists() ) {
-			copyFileFromJar(configFile, "config.yml");
-		}
-		config = getConfig();
+        try {
+            accountHandler = new AccountHandler();
+        } catch (Exception e) {
+            logger.severe(e.getLocalizedMessage());
+            e.printStackTrace();
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
 
-		initResource(getLang());
+        File configFile = new File(getDataFolder(), "config.yml");
+        if ( !configFile.exists() ) {
+            copyFileFromJar(configFile, "config.yml");
+        }
+        config = getConfig();
 
-		executor = new HitAndBlowCommandExecutor();
-		getCommand("hb").setExecutor(executor);
+        initResource(getLang());
 
-		PlayerLogoutListener listener = new PlayerLogoutListener();
-		getServer().getPluginManager().registerEvents(listener, this);
+        executor = new HitAndBlowCommandExecutor();
+        getCommand("hb").setExecutor(executor);
 
-		GameLogFolder = this.getDataFolder() + File.separator + GameLogFolderName;
-		UserFolder = this.getDataFolder() + File.separator + UserFolderName;
+        PlayerLogoutListener listener = new PlayerLogoutListener();
+        getServer().getPluginManager().registerEvents(listener, this);
 
-		super.onEnable();
-	}
+        GameLogFolder = this.getDataFolder() + File.separator + GameLogFolderName;
+        UserFolder = this.getDataFolder() + File.separator + UserFolderName;
 
-	/**
-	 * @see org.bukkit.plugin.java.JavaPlugin#onDisable()
-	 */
-	@Override
-	public void onDisable() {
+        super.onEnable();
+    }
 
-		//saveConfig();
-		super.onDisable();
-	}
+    private void initResource(String lang) {
 
-	private void initResource(String lang) {
+        // Copy resource files to lang folder.
 
-		File jaFile = new File(getDataFolder() + File.separator +
-				HitAndBlowPlugin.LangFolderName + File.separator + "ja.txt");
-		if ( !jaFile.exists() ) {
-			copyFileFromJar(jaFile, "ja.txt");
-	    }
+        File jaFile = new File(getDataFolder() + File.separator +
+                HitAndBlowPlugin.LangFolderName + File.separator + "ja.txt");
+        if ( !jaFile.exists() ) {
+            copyFileFromJar(jaFile, "ja.txt");
+        }
 
-		File enFile = new File(getDataFolder() + File.separator +
-				HitAndBlowPlugin.LangFolderName + File.separator + "en.txt");
-		if ( !enFile.exists() ) {
-			copyFileFromJar(enFile, "en.txt");
-	    }
+        File enFile = new File(getDataFolder() + File.separator +
+                HitAndBlowPlugin.LangFolderName + File.separator + "en.txt");
+        if ( !enFile.exists() ) {
+            copyFileFromJar(enFile, "en.txt");
+        }
 
-		Resources.initialize(getDataFolder() + File.separator +
-				HitAndBlowPlugin.LangFolderName + File.separator + lang + ".txt");
-	}
+        // Load default resrouce from jar file.
+        Resources.loadFromInputStream(getInputStreamFromJar("en.txt"));
 
-	public static List<Double> getSingleRewards() {
+        // Load (overwrite) resource from lang folder file.
+        Resources.loadFromFile(getDataFolder() + File.separator +
+                HitAndBlowPlugin.LangFolderName + File.separator + lang + ".txt");
+    }
 
-		return config.getDoubleList(KEY_CONF_SINGLE_REWARDS);
-	}
+    public static List<Double> getSingleRewards() {
 
-	public static int getSingleLevel() {
+        return config.getDoubleList(KEY_CONF_SINGLE_REWARDS);
+    }
 
-		int level = 3;
-		level = config.getInt(KEY_CONF_SINGLE_LEVEL);
-		if ( level < 2 ) {
-			level = 2;
-		} else if ( level > 7 ) {
-			level = 7;
-		}
-		return level;
-	}
+    public static int getSingleLevel() {
 
-	public static Double getVersusStake() {
+        int level = config.getInt(KEY_CONF_SINGLE_LEVEL);
+        if ( level < MIN_LEVEL ) {
+            level = MIN_LEVEL;
+        } else if ( level > MAX_LEVEL ) {
+            level = MAX_LEVEL;
+        }
+        return level;
+    }
 
-		return config.getDouble(KEY_CONF_VERSUS_STAKE);
-	}
+    public static Double getVersusStake() {
 
-	public static int getVersusLevel() {
+        return config.getDouble(KEY_CONF_VERSUS_STAKE);
+    }
 
-		int level = 3;
-		level = config.getInt(KEY_CONF_VERSUS_LEVEL);
-		if ( level < 2 ) {
-			level = 2;
-		} else if ( level > 7 ) {
-			level = 7;
-		}
-		return level;
-	}
+    public static int getVersusLevel() {
 
-	public static Double getVersusReward() {
+        int level = config.getInt(KEY_CONF_VERSUS_LEVEL);
+        if ( level < MIN_LEVEL ) {
+            level = MIN_LEVEL;
+        } else if ( level > MAX_LEVEL ) {
+            level = MAX_LEVEL;
+        }
+        return level;
+    }
 
-		return config.getDouble(KEY_CONF_VERSUS_REWARD);
-	}
+    public static Double getVersusReward() {
 
-	public static int getSingleDialyTimes() {
+        return config.getDouble(KEY_CONF_VERSUS_REWARD);
+    }
 
-		return config.getInt(KEY_CONF_SINGLE_TIMES);
-	}
+    public static int getSingleDialyTimes() {
 
-	public static boolean getAnnounce() {
+        return config.getInt(KEY_CONF_SINGLE_TIMES);
+    }
 
-		return config.getBoolean(KEY_CONF_ANNOUNCE);
-	}
+    public static boolean getAnnounce() {
 
-	public static String getLang() {
+        return config.getBoolean(KEY_CONF_ANNOUNCE);
+    }
 
-		return config.getString(KEY_CONF_LANG);
-	}
+    public static String getLang() {
+
+        return config.getString(KEY_CONF_LANG);
+    }
 
     private void copyFileFromJar(File outputFile, String inputFileName) {
 
@@ -177,35 +172,42 @@ public class HitAndBlowPlugin extends JavaPlugin {
         FileOutputStream fos;
         File parent = outputFile.getParentFile();
         if ( !parent.exists() ) {
-        	parent.mkdirs();
+            parent.mkdirs();
         }
 
         try {
-			JarFile jarFile = new JarFile(getFile());
-			ZipEntry zipEntry = jarFile.getEntry(inputFileName);
-			is = jarFile.getInputStream(zipEntry);
+            JarFile jarFile = new JarFile(getFile());
+            ZipEntry zipEntry = jarFile.getEntry(inputFileName);
+            is = jarFile.getInputStream(zipEntry);
 
-			fos = new FileOutputStream(outputFile);
+            fos = new FileOutputStream(outputFile);
 
-			byte[] buf = new byte[8192];
-			int len;
-			while ( (len = is.read(buf)) != -1 ) {
-				fos.write(buf, 0, len);
-			}
-			fos.flush();
-			fos.close();
-			is.close();
+            byte[] buf = new byte[8192];
+            int len;
+            while ( (len = is.read(buf)) != -1 ) {
+                fos.write(buf, 0, len);
+            }
+            fos.flush();
+            fos.close();
+            is.close();
 
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    protected Player getPlayer(String name) {
+    private InputStream getInputStreamFromJar(String inputFileName) {
 
-    	return getServer().getPlayer(name);
+        try {
+            JarFile jarFile = new JarFile(getFile());
+            ZipEntry zipEntry = jarFile.getEntry(inputFileName);
+            return jarFile.getInputStream(zipEntry);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return null;
     }
-
 }

@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright ucchy 2012
  */
 package org.github.ucchyocean.hitandblow;
 
@@ -14,15 +14,15 @@ import org.bukkit.event.player.PlayerQuitEvent;
  */
 public class PlayerLogoutListener implements Listener {
 
-	@EventHandler
-	public void onPlayerQuit(PlayerQuitEvent event) {
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
 
-		Player player = event.getPlayer();
+        Player player = event.getPlayer();
 
-		GameSession session = GameSessionManager.getSessionByPlayer(player);
+        GameSession session = GameSessionManager.getSessionByPlayer(player);
 
-		if ( session != null ) {
-			session.cancelGame();
-		}
-	}
+        if ( session != null ) {
+            session.cancelGame();
+        }
+    }
 }

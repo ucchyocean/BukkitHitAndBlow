@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright ucchy 2012
  */
 package org.github.ucchyocean.hitandblow;
 
@@ -22,181 +22,181 @@ import org.bukkit.entity.Player;
  */
 public abstract class GameSession {
 
-	enum GamePhase {
-		SINGLE_CALL, VERSUS_PREPARE, VERSUS_SETNUMBER, VERSUS_P1CALL, VERSUS_P2CALL, ENDED, CANCELED };
+    enum GamePhase {
+        SINGLE_CALL, VERSUS_PREPARE, VERSUS_SETNUMBER, VERSUS_P1CALL, VERSUS_P2CALL, ENDED, CANCELED };
 
-	protected String name;
-	protected Player player1;
-	protected Vector<CommandSender> listeners;
-	protected String startDate;
+    protected String name;
+    protected Player player1;
+    protected Vector<CommandSender> listeners;
+    protected String startDate;
 
-	protected GamePhase phase;
-	protected int level;
-	protected int[] p2answer;
-	protected Vector<int[]> p1scoreHistory;
-	protected Vector<String> p1codeHistory;
+    protected GamePhase phase;
+    protected int level;
+    protected int[] p2answer;
+    protected Vector<int[]> p1scoreHistory;
+    protected Vector<String> p1codeHistory;
 
-	public GameSession(Player player1, int level) {
+    public GameSession(Player player1, int level) {
 
-		SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
-		this.startDate = format.format(new Date());
-		this.name = player1.getName();
+        SimpleDateFormat format = new SimpleDateFormat("yyyyMMdd-HHmmss-SSS");
+        this.startDate = format.format(new Date());
+        this.name = player1.getName();
 
-		this.player1 = player1;
-		this.level = level;
-		this.listeners = new Vector<CommandSender>();
+        this.player1 = player1;
+        this.level = level;
+        this.listeners = new Vector<CommandSender>();
 
-		this.p1scoreHistory = new Vector<int[]>();
-		this.p1codeHistory = new Vector<String>();
+        this.p1scoreHistory = new Vector<int[]>();
+        this.p1codeHistory = new Vector<String>();
 
-		GameSessionManager.addSession(this);
-	}
+        GameSessionManager.addSession(this);
+    }
 
-	protected void runEndPhase() {
+    protected void runEndPhase() {
 
-		phase = GamePhase.ENDED;
-		GameSessionManager.removeSession(this);
-		saveGameLog();
-	}
+        phase = GamePhase.ENDED;
+        GameSessionManager.removeSession(this);
+        saveGameLog();
+    }
 
-	protected void cancelGame() {
+    protected void cancelGame() {
 
-		phase = GamePhase.CANCELED;
-		GameSessionManager.removeSession(this);
-		saveGameLog();
-	}
+        phase = GamePhase.CANCELED;
+        GameSessionManager.removeSession(this);
+        saveGameLog();
+    }
 
-	protected void printP1(String message) {
+    protected void printP1(String message) {
 
-		printTo(player1, message);
-	}
+        printTo(player1, message);
+    }
 
-	protected void printToListeners(String message) {
+    protected void printToListeners(String message) {
 
-		for ( CommandSender p : listeners ) {
-			printTo(p, message);
-		}
-	}
+        for ( CommandSender p : listeners ) {
+            printTo(p, message);
+        }
+    }
 
-	protected void printTo(CommandSender player, String message) {
+    protected void printTo(CommandSender player, String message) {
 
-		player.sendMessage(String.format("[%s] %s", HitAndBlowPlugin.NAME, message));
-	}
+        player.sendMessage(String.format("[%s] %s", HitAndBlowPlugin.NAME, message));
+    }
 
-	protected int[] checkEatBite(int[] answer, int[] call) {
+    protected int[] checkEatBite(int[] answer, int[] call) {
 
-		int eat = 0;
-		int bite = 0;
-		boolean[] checked = new boolean[level];
+        int eat = 0;
+        int bite = 0;
+        boolean[] checked = new boolean[level];
 
-		for ( int i=0; i<level; i++ ) {
-			if ( answer[i] == call[i] ) {
-				eat++;
-				checked[i] = true;
-			}
-		}
+        for ( int i=0; i<level; i++ ) {
+            if ( answer[i] == call[i] ) {
+                eat++;
+                checked[i] = true;
+            }
+        }
 
-		for ( int i=0; i<level; i++ ) {
-			if ( !checked[i] ) {
-				for ( int j=0; j<level; j++ ) {
-					if ( answer[i] == call[j] ) {
-						bite++;
-						break;
-					}
-				}
-			}
-		}
+        for ( int i=0; i<level; i++ ) {
+            if ( !checked[i] ) {
+                for ( int j=0; j<level; j++ ) {
+                    if ( answer[i] == call[j] ) {
+                        bite++;
+                        break;
+                    }
+                }
+            }
+        }
 
-		int[] result = new int[2];
+        int[] result = new int[2];
 
-		result[0] = eat;
-		result[1] = bite;
+        result[0] = eat;
+        result[1] = bite;
 
-		return result;
-	}
+        return result;
+    }
 
-	protected void saveGameLog() {
+    protected void saveGameLog() {
 
-		List<String> contents = getHistory(null);
+        List<String> contents = getHistory(null);
 
-		File logFileFolder = new File(HitAndBlowPlugin.GameLogFolder);
+        File logFileFolder = new File(HitAndBlowPlugin.GameLogFolder);
 
-		if ( !logFileFolder.exists() ) {
-			logFileFolder.mkdirs();
-		}
+        if ( !logFileFolder.exists() ) {
+            logFileFolder.mkdirs();
+        }
 
-		String filename = String.format("%s-%s.log", name, startDate);
-		File logFile = new File(HitAndBlowPlugin.GameLogFolder + File.separator + filename);
+        String filename = String.format("%s-%s.log", name, startDate);
+        File logFile = new File(HitAndBlowPlugin.GameLogFolder + File.separator + filename);
 
-		try {
-			BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.getAbsolutePath()));
-			for ( String s : contents ) {
-				writer.write(s);
-				writer.newLine();
-			}
-			writer.flush();
-			writer.close();
-		} catch (IOException e) {
-			HitAndBlowPlugin.logger.severe("Could not write game log file.");
-			HitAndBlowPlugin.logger.severe(e.getLocalizedMessage());
-			e.printStackTrace();
-		}
-	}
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(logFile.getAbsolutePath()));
+            for ( String s : contents ) {
+                writer.write(s);
+                writer.newLine();
+            }
+            writer.flush();
+            writer.close();
+        } catch (IOException e) {
+            HitAndBlowPlugin.logger.severe("Could not write game log file.");
+            HitAndBlowPlugin.logger.severe(e.getLocalizedMessage());
+            e.printStackTrace();
+        }
+    }
 
-	public int getLevel() {
+    public int getLevel() {
 
-		return level;
-	}
+        return level;
+    }
 
-	protected int[] parseS2I(String str) {
+    protected int[] parseS2I(String str) {
 
-		int[] result = new int[level];
+        int[] result = new int[level];
 
-		for ( int i=0; i<level; i++ ) {
-			result[i] = str.charAt(i) - 48;
-		}
+        for ( int i=0; i<level; i++ ) {
+            result[i] = str.charAt(i) - 48;
+        }
 
-		return result;
-	}
+        return result;
+    }
 
-	protected String parseI2S(int[] integers) {
+    protected String parseI2S(int[] integers) {
 
-		if ( integers == null ) {
-			return "";
-		}
+        if ( integers == null ) {
+            return "";
+        }
 
-		StringBuilder str = new StringBuilder();
+        StringBuilder str = new StringBuilder();
 
-		for ( int i : integers ) {
-			str.append(i);
-		}
+        for ( int i : integers ) {
+            str.append(i);
+        }
 
-		return str.toString();
-	}
+        return str.toString();
+    }
 
-	protected void printHistory(CommandSender sender) {
+    protected void printHistory(CommandSender sender) {
 
-		List<String> messages = getHistory(sender);
+        List<String> messages = getHistory(sender);
 
-		for ( String m : messages ) {
-			sender.sendMessage(ChatColor.GRAY + m);
-		}
-	}
+        for ( String m : messages ) {
+            sender.sendMessage(ChatColor.GRAY + m);
+        }
+    }
 
-	protected void addListener(CommandSender player) {
+    protected void addListener(CommandSender player) {
 
-		listeners.add(player);
-	}
+        listeners.add(player);
+    }
 
-	protected void removeListener(CommandSender player) {
+    protected void removeListener(CommandSender player) {
 
-		listeners.remove(player);
-	}
+        listeners.remove(player);
+    }
 
-	protected abstract List<String> getHistory(CommandSender sender);
-	protected abstract void callNumber(Player player, String number) throws HitAndBlowException;
-	protected abstract boolean isPlayerForSet(Player player);
-	protected abstract boolean isPlayerForCall(Player player);
-	protected abstract boolean isPlayerForCancel(Player player);
-	public abstract String toString();
+    protected abstract List<String> getHistory(CommandSender sender);
+    protected abstract void callNumber(Player player, String number) throws HitAndBlowException;
+    protected abstract boolean isPlayerForSet(Player player);
+    protected abstract boolean isPlayerForCall(Player player);
+    protected abstract boolean isPlayerForCancel(Player player);
+    public abstract String toString();
 }

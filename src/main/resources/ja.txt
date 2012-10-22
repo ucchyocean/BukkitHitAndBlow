@@ -4,6 +4,7 @@ announceVersusEnd=%sさんが%sさんに、%d回目のコールで勝利しま�
 announceVersusStart=%sさんと%sさんがゲームを開始しました。
 
 canceled=HitAndBlowがキャンセルされました。
+
 cannotRunInGame=ゲーム中にこのコマンドは実行できません。
 cannotRunOnConsole=コンソールからは実行できないコマンドです。
 

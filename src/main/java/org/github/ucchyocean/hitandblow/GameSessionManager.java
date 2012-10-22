@@ -1,3 +1,6 @@
+/*
+ * Copyright ucchy 2012
+ */
 package org.github.ucchyocean.hitandblow;
 
 import java.util.Vector;
@@ -7,227 +10,194 @@ import org.bukkit.entity.Player;
 
 public class GameSessionManager {
 
-	private static Vector<GameSession> sessions;
+    private static Vector<GameSession> sessions;
 
-	static {
-		sessions = new Vector<GameSession>();
-	}
+    static {
+        sessions = new Vector<GameSession>();
+    }
 
-	public static void addSession(GameSession session) {
+    public static void addSession(GameSession session) {
+        sessions.add(session);
+    }
 
-		cleanSessions();
-		sessions.add(session);
-	}
+    public static void removeSession(GameSession session) {
+        sessions.remove(session);
+    }
 
-	public static void removeSession(GameSession session) {
+    public static Vector<GameSession> getSessions() {
+        return sessions;
+    }
 
-		cleanSessions();
-		sessions.remove(session);
-	}
+    public static boolean isPlayerForAccept(Player player) {
 
-	public static Vector<GameSession> getSessions() {
+        VersusGameSession session = getVersusSessionByClientPlayer(player);
+        return (session != null && session.isVersusPreparePhase());
+    }
 
-		return sessions;
-	}
+    public static boolean isPlayerForSet(Player player) {
 
-	public static boolean isPlayerForAccept(Player player) {
+        GameSession session = getSessionByPlayer(player);
+        return (session != null && session.isPlayerForSet(player));
+    }
 
-		VersusGameSession session = getVersusSessionByClientPlayer(player);
-		return (session != null && session.isVersusPreparePhase());
-	}
+    public static boolean isPlayerForCall(Player player) {
 
-	public static boolean isPlayerForSet(Player player) {
+        GameSession session = getSessionByPlayer(player);
+        return (session != null && session.isPlayerForCall(player));
+    }
 
-		GameSession session = getSessionByPlayer(player);
-		return (session != null && session.isPlayerForSet(player));
-	}
+    public static boolean isPlayerForCancel(Player player) {
 
-	public static boolean isPlayerForCall(Player player) {
+        GameSession session = getSessionByPlayer(player);
+        return (session != null && session.isPlayerForCancel(player));
+    }
 
-		GameSession session = getSessionByPlayer(player);
-		return (session != null && session.isPlayerForCall(player));
-	}
+    public static boolean isCommandSenderForHistory(CommandSender sender) {
 
-	public static boolean isPlayerForCancel(Player player) {
+        GameSession session = getSessionByPlayerAndListener(sender);
+        return (session != null);
+    }
 
-		GameSession session = getSessionByPlayer(player);
-		return (session != null && session.isPlayerForCancel(player));
-	}
+    public static boolean runSetNumberPhaseByPlayer(Player player) {
 
-	public static boolean isCommandSenderForHistory(CommandSender sender) {
+        VersusGameSession session = (VersusGameSession)getSessionByPlayer(player);
+        if ( session != null ) {
+            session.runSetNumberPhase();
+            return true;
+        }
 
-		GameSession session = getSessionByPlayerAndListener(sender);
-		return (session != null);
-	}
+        return false;
+    }
 
-	public static boolean runSetNumberPhaseByPlayer(Player player) {
+    public static boolean setNumberByPlayer(Player player, String number) {
 
-		VersusGameSession session = (VersusGameSession)getSessionByPlayer(player);
-		if ( session != null ) {
-			session.runSetNumberPhase();
-			return true;
-		}
+        VersusGameSession session = (VersusGameSession)getSessionByPlayer(player);
+        if ( session != null ) {
+            return session.setAnswer(player, number);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public static boolean setNumberByPlayer(Player player, String number) {
+    public static boolean callNumberByPlayer(Player player, String number) {
 
-		VersusGameSession session = (VersusGameSession)getSessionByPlayer(player);
-		if ( session != null ) {
-			return session.setAnswer(player, number);
-		}
+        GameSession session = getSessionByPlayer(player);
+        if ( session != null ) {
+            try {
+                session.callNumber(player, number);
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public static boolean callNumberByPlayer(Player player, String number) {
+    public static boolean cancelGameByPlayer(Player player) {
 
-		GameSession session = getSessionByPlayer(player);
-		if ( session != null ) {
-			try {
-				session.callNumber(player, number);
-				return true;
-			} catch (Exception e) {
-				e.printStackTrace();
-				return false;
-			}
-		}
+        GameSession session = getSessionByPlayer(player);
+        if ( session != null ) {
+            session.cancelGame();
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public static boolean cancelGameByPlayer(Player player) {
+    public static boolean printHistoryByPlayer(CommandSender sender) {
 
-		GameSession session = getSessionByPlayer(player);
-		if ( session != null ) {
-			session.cancelGame();
-			return true;
-		}
+        GameSession session = getSessionByPlayerAndListener(sender);
+        if ( session != null ) {
+            session.printHistory(sender);
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public static boolean printHistoryByPlayer(CommandSender sender) {
+    public static boolean isPlayerInGame(Player player) {
 
-		GameSession session = getSessionByPlayerAndListener(sender);
-		if ( session != null ) {
-			session.printHistory(sender);
-			return true;
-		}
+        return (getSessionByPlayer(player) != null);
+    }
 
-		return false;
-	}
+    public static GameSession getSessionByPlayer(Player player) {
 
-	public static boolean isPlayerInGame(Player player) {
+        for ( GameSession s : sessions ) {
+            if ( s.player1.equals(player) ) {
+                return s;
+            } else if ( s instanceof VersusGameSession ) {
+                VersusGameSession vs = (VersusGameSession)s;
+                if ( vs.player2.equals(player) ) {
+                    return vs;
+                }
+            }
+        }
 
-		return (getSessionByPlayer(player) != null);
-	}
+        return null;
+    }
 
-	public static GameSession getSessionByPlayer(Player player) {
+    public static GameSession getSessionByPlayerAndListener(CommandSender sender) {
 
-		for ( GameSession s : sessions ) {
-			if ( s.player1.equals(player) ) {
-				return s;
-			} else if ( s instanceof VersusGameSession ) {
-				VersusGameSession vs = (VersusGameSession)s;
-				if ( vs.player2.equals(player) ) {
-					return vs;
-				}
-			}
-		}
+        for ( GameSession s : sessions ) {
+            if ( s.player1.equals(sender) || s.listeners.contains(sender) ) {
+                return s;
+            } else if ( s instanceof VersusGameSession ) {
+                VersusGameSession vs = (VersusGameSession)s;
+                if ( vs.player2.equals(sender) ) {
+                    return vs;
+                }
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static GameSession getSessionByPlayerAndListener(CommandSender sender) {
+    public static GameSession getSessionByListener(CommandSender sender) {
 
-		for ( GameSession s : sessions ) {
-			if ( s.player1.equals(sender) || s.listeners.contains(sender) ) {
-				return s;
-			} else if ( s instanceof VersusGameSession ) {
-				VersusGameSession vs = (VersusGameSession)s;
-				if ( vs.player2.equals(sender) ) {
-					return vs;
-				}
-			}
-		}
+        for ( GameSession s : sessions ) {
+            if ( s.listeners.contains(sender) ) {
+                return s;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static GameSession getSessionByListener(CommandSender sender) {
+    public static VersusGameSession getVersusSessionByOwnerPlayer(Player player) {
 
-		for ( GameSession s : sessions ) {
-			if ( s.listeners.contains(sender) ) {
-				return s;
-			}
-		}
+        for ( GameSession s : sessions ) {
+            if ( s instanceof VersusGameSession && s.player1.equals(player) ) {
+                return (VersusGameSession)s;
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static VersusGameSession getVersusSessionByOwnerPlayer(Player player) {
+    public static VersusGameSession getVersusSessionByClientPlayer(Player player) {
 
-		for ( GameSession s : sessions ) {
-			if ( s instanceof VersusGameSession && s.player1.equals(player) ) {
-				return (VersusGameSession)s;
-			}
-		}
+        for ( GameSession s : sessions ) {
+            if ( s instanceof VersusGameSession ) {
+                VersusGameSession vs = (VersusGameSession)s;
+                if ( vs.player2.equals(player) ) {
+                    return vs;
+                }
+            }
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	public static VersusGameSession getVersusSessionByClientPlayer(Player player) {
+    public static GameSession getSessionByName(String name) {
 
-		for ( GameSession s : sessions ) {
-			if ( s instanceof VersusGameSession ) {
-				VersusGameSession vs = (VersusGameSession)s;
-				if ( vs.player2.equals(player) ) {
-					return vs;
-				}
-			}
-		}
+        for ( GameSession s : sessions ) {
+            if ( s.name.equalsIgnoreCase(name) ) {
+                return s;
+            }
+        }
 
-		return null;
-	}
-
-	public static GameSession getSessionByName(String name) {
-
-		for ( GameSession s : sessions ) {
-			if ( s.name.equalsIgnoreCase(name) ) {
-				return s;
-			}
-		}
-
-		return null;
-	}
-
-	private static void cleanSessions() {
-
-		for ( GameSession s : sessions ) {
-			if ( !isValidPlayer(s.player1) ) {
-				s.cancelGame();
-				//System.out.println(String.format("[%s] Game %s was canceled.", HitAndBlowPlugin.NAME, s.name));
-			}
-			if ( s instanceof VersusGameSession ) {
-				VersusGameSession vs = (VersusGameSession)s;
-				if ( !isValidPlayer(vs.player2) ) {
-					s.cancelGame();
-					//System.out.println(String.format("[%s] Game %s was canceled.", HitAndBlowPlugin.NAME, s.name));
-				}
-			}
-		}
-	}
-
-	private static boolean isValidPlayer(Player player) {
-
-		if ( player == null )
-			return false;
-		if ( !player.isOnline() )
-			return false;
-		if ( !player.equals( HitAndBlowPlugin.instance.getPlayer(player.getName()) ) )
-			return false;
-		return true;
-	}
+        return null;
+    }
 }

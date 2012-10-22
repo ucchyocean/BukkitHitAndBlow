@@ -1,5 +1,5 @@
-/**
- *
+/*
+ * Copyright ucchy 2012
  */
 package org.github.ucchyocean.hitandblow;
 
@@ -9,12 +9,9 @@ package org.github.ucchyocean.hitandblow;
  */
 public class HitAndBlowException extends Exception {
 
-	/**
-	 *
-	 */
-	private static final long serialVersionUID = -3839307786891645911L;
+    private static final long serialVersionUID = -3839307786891645911L;
 
-	public HitAndBlowException(String string) {
-		super(string);
-	}
+    public HitAndBlowException(String string) {
+        super(string);
+    }
 }
