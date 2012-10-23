@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package org.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow;
 
 import java.io.BufferedWriter;
 import java.io.File;

@@ -1,5 +1,5 @@
 name: HitAndBlow
-main: org.github.ucchyocean.hitandblow.HitAndBlowPlugin
+main: com.github.ucchyocean.hitandblow.HitAndBlowPlugin
 version: 1.0.1
 authors: [ucchy]
 load: startup

@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package org.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow;
 
 import java.util.Vector;
 
@@ -11,7 +11,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.github.ucchyocean.misc.Resources;
+
+import com.github.ucchyocean.misc.Resources;
 
 /**
  * @author ucchy

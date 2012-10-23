@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package org.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -15,8 +15,9 @@ import java.util.zip.ZipEntry;
 
 import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.github.ucchyocean.misc.AccountHandler;
-import org.github.ucchyocean.misc.Resources;
+
+import com.github.ucchyocean.misc.AccountHandler;
+import com.github.ucchyocean.misc.Resources;
 
 /**
  * @author ucchy

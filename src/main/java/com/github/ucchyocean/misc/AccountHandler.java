@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package org.github.ucchyocean.misc;
+package com.github.ucchyocean.misc;
 
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;

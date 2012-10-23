@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package org.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow;
 
 import java.util.List;
 import java.util.Vector;
@@ -10,7 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.github.ucchyocean.misc.Resources;
+
+import com.github.ucchyocean.misc.Resources;
 
 /**
  * @author ucchy
@@ -252,7 +253,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see org.github.ucchyocean.hitandblow.GameSession#isPlayerForSet(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForSet(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForSet(Player player) {
@@ -261,7 +262,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see org.github.ucchyocean.hitandblow.GameSession#isPlayerForCall(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForCall(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForCall(Player player) {
@@ -276,7 +277,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see org.github.ucchyocean.hitandblow.GameSession#isPlayerForCancel(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForCancel(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForCancel(Player player) {
@@ -285,7 +286,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see org.github.ucchyocean.hitandblow.GameSession#getHistory(org.bukkit.command.CommandSender)
+     * @see com.github.ucchyocean.hitandblow.GameSession#getHistory(org.bukkit.command.CommandSender)
      */
     @Override
     protected Vector<String> getHistory(CommandSender sender) {
@@ -386,7 +387,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see org.github.ucchyocean.hitandblow.GameSession#toString()
+     * @see com.github.ucchyocean.hitandblow.GameSession#toString()
      */
     @Override
     public String toString() {
