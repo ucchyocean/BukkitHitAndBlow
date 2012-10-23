@@ -30,7 +30,7 @@ phaseVersusPrepare=対戦ゲーム 準備中
 phaseVersusSetnumber=対戦ゲーム 答え設定中
 phaseVersusYourTurn=あなたのターン
 
-pleaseCall=Numberを指定してください。/%s call [Number]
+pleaseCall=Numberを指定してください。/hb call [Number]
 
 singleExpire=本日のゲームプレイ回数を越えました。
 singleLeast=あと%d回、ゲームができます。
@@ -74,7 +74,7 @@ versusPartnerInGame=相手プレイヤーがゲーム中です。
 versusPartnerNotHaveFunds=%s さんは掛け金%.2f%sが足りません。
 versusSelf=対戦相手には自分を指定できません。
 versusSet=%s さんがNumberを設定しました。
-versusSetNumber=Numberを指定してください。/%s set [Number]
+versusSetNumber=Numberを指定してください。/hb set [Number]
 versusSetNumberFigures=%d桁の数字を指定してください。
 versusSetNumberSame=同じ数字を含めることはできません。
 versusStarting1=掛け金%.2f%sを支払いました。ゲームを開始します。

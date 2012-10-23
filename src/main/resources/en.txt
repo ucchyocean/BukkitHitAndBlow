@@ -30,7 +30,7 @@ phaseVersusPrepare=Versus Game - Prepare
 phaseVersusSetnumber=Versus Game - Setting answers
 phaseVersusYourTurn=Your turn
 
-pleaseCall=Please call Number. /%s call [Number]
+pleaseCall=Please call Number. /hb call [Number]
 
 singleExpire=You surpassed the game play possibility number of times of today.
 singleLeast=You can play more game in %d times today.
@@ -74,7 +74,7 @@ versusPartnerInGame=A partner player is playing a game.
 versusPartnerNotHaveFunds=%s do not have funds %.2f%s.
 versusSelf=You cannot set yourself for a partner player.
 versusSet=%s set Number.
-versusSetNumber=Please set your Number. /%s set [Number]
+versusSetNumber=Please set your Number. /hb set [Number]
 versusSetNumberFigures=Please set the Number of %d figures.
 versusSetNumberSame=You cannot include the same number.
 versusStarting1=You paid %.2f%s.

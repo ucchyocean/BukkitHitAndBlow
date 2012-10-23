@@ -282,7 +282,7 @@ public class VersusGameSession extends GameSession {
     @Override
     protected boolean isPlayerForCancel(Player player) {
 
-        return !(phase.equals(GamePhase.CANCELED) || phase.equals(GamePhase.ENDED));
+        return (phase.equals(GamePhase.VERSUS_PREPARE) || phase.equals(GamePhase.VERSUS_SETNUMBER));
     }
 
     /**

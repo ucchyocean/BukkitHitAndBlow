@@ -20,14 +20,17 @@ import com.github.ucchyocean.misc.Resources;
  */
 public class HitAndBlowCommandExecutor implements CommandExecutor {
 
+    private static final String PREFIX = String.format("[%s] ", HitAndBlowPlugin.NAME);
+    private static final String PREERR = ChatColor.DARK_RED + PREFIX;
+
     /**
      * @see org.bukkit.command.CommandExecutor#onCommand(org.bukkit.command.CommandSender, org.bukkit.command.Command, java.lang.String, java.lang.String[])
      */
     public boolean onCommand(
             CommandSender sender, Command command, String label, String[] args) {
 
-        String prefix = String.format("[%s] ", HitAndBlowPlugin.NAME);
-        String preErr = ChatColor.DARK_RED + prefix;
+        String PREFIX = String.format("[%s] ", HitAndBlowPlugin.NAME);
+        String PREERR = ChatColor.DARK_RED + PREFIX;
 
         if ( args.length == 0 ) {
             printUsage(sender, command.getName());
@@ -39,310 +42,284 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
             if ( args.length >= 1 ) {
 
                 if ( args[0].equalsIgnoreCase("hist") || args[0].equalsIgnoreCase("history") ) {
-
-                    if ( !GameSessionManager.isCommandSenderForHistory(sender) ) {
-                        sender.sendMessage(preErr + Resources.get("notPlayerInGame"));
-                        return true;
-                    }
-
-                    return GameSessionManager.printHistoryByPlayer(sender);
-
+                    return execHistory(sender);
                 } if ( args[0].equalsIgnoreCase("rank") ) {
-
                     printRanking(sender);
                     return true;
-
                 } else if ( args[0].equalsIgnoreCase("list") ) {
-
                     printList(sender);
                     return true;
-
                 } else if ( args[0].equalsIgnoreCase("listen") ) {
-
-                    if ( args.length < 2 ) {
-                        sender.sendMessage(preErr + Resources.get("listenerSetName"));
-                        return true;
-                    }
-
-                    String gamename = args[1];
-                    GameSession session = GameSessionManager.getSessionByName(gamename);
-
-                    if ( session == null ) {
-                        sender.sendMessage(preErr + Resources.get("listenerNotFound"));
-                        return true;
-                    }
-
-                    GameSession already = GameSessionManager.getSessionByListener(sender);
-                    if ( already != null ) {
-                        sender.sendMessage(preErr +
-                                String.format(Resources.get("listenerAlreadyAdded"), already.name) );
-                        return true;
-                    }
-
-                    session.addListener(sender);
-                    sender.sendMessage( String.format(Resources.get("listenerAdded"), gamename) );
-                    return true;
-
+                    return execListen(sender, args);
                 } else if ( args[0].equalsIgnoreCase("exitlisten") ) {
-
-                    GameSession session = GameSessionManager.getSessionByListener(sender);
-
-                    if ( session == null ) {
-                        sender.sendMessage(preErr + Resources.get("listenerNotAdded"));
-                        return true;
-                    }
-
-                    session.removeListener(sender);
-                    sender.sendMessage( String.format(Resources.get("listenerExited"), session.name) );
-                    return true;
-
+                    return execExitListen(sender);
                 }
             }
 
-            sender.sendMessage(preErr + Resources.get("cannotRunOnConsole"));
+            sender.sendMessage(PREERR + Resources.get("cannotRunOnConsole"));
             return true;
         }
 
         Player player = (Player)sender;
 
         if ( args[0].equalsIgnoreCase("newgame") ) {
-
-            if ( GameSessionManager.isPlayerInGame(player) ) {
-                sender.sendMessage(preErr + Resources.get("cannotRunInGame"));
-                return true;
-            }
-
-            if ( args.length < 2 ) {
-                // Single game mode.
-
-                if ( HitAndBlowPlugin.getSingleDialyTimes() != 0 ) {
-                    int times = UserConfiguration.getUserDailyPlayTimes(player.getName());
-                    if ( HitAndBlowPlugin.getSingleDialyTimes() <= times ) {
-                        sender.sendMessage(preErr + Resources.get("singleExpire"));
-                        return true;
-                    }
-                    sender.sendMessage(prefix + String.format(Resources.get("singleTimes"), times+1));
-                    sender.sendMessage(prefix + String.format(Resources.get("singleLeast"),
-                            (HitAndBlowPlugin.getSingleDialyTimes() - times)));
-
-                    UserConfiguration.addUserDailyPlayTimes(player.getName());
-                }
-
-                new SingleGameSession(player, HitAndBlowPlugin.getSingleLevel());
-                return true;
-
-            } else {
-                // Versus game mode.
-
-                Double stake = HitAndBlowPlugin.getVersusStake();
-                String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
-                int level = HitAndBlowPlugin.getVersusLevel();
-
-                Player other = (Bukkit.getServer().getPlayer(args[1]));
-                if ( other == null ) {
-                    sender.sendMessage(preErr + Resources.get("versusOffline"));
-                    return true;
-                } else if ( GameSessionManager.isPlayerInGame(other) ) {
-                    sender.sendMessage(preErr + Resources.get("versusPartnerInGame"));
-                    return true;
-                } else if ( player.getName().equals(other.getName()) ) {
-                    sender.sendMessage(preErr + Resources.get("versusSelf"));
-                    return true;
-                }
-
-                if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
-                    sender.sendMessage(preErr + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
-                    return true;
-                }
-
-                if ( args.length >= 3 ) {
-                    if ( args[2].matches("[2-7]") ) {
-                        level = Integer.parseInt(args[2]);
-                    } else {
-                        sender.sendMessage(preErr + Resources.get("versusLevelWasnotInt"));
-                        return true;
-                    }
-                }
-
-                VersusGameSession session = new VersusGameSession(player, other, level);
-
-                session.runPreparePhase();
-
-                return true;
-            }
-
+            return execNewGame(player, args);
         } else if ( args[0].equalsIgnoreCase("accept") ) {
-
-            if ( !GameSessionManager.isPlayerForAccept(player) ) {
-                sender.sendMessage(preErr + Resources.get("versusCannotAccept"));
-                return true;
-            }
-
-            Double stake = HitAndBlowPlugin.getVersusStake();
-            String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
-
-            if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
-                sender.sendMessage(preErr + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
-                return true;
-            }
-
-            return GameSessionManager.runSetNumberPhaseByPlayer(player);
-
+            return execAccept(player);
         } else if ( args[0].equalsIgnoreCase("set") ) {
-
-            if ( !GameSessionManager.isPlayerForSet(player) ) {
-                sender.sendMessage(preErr + Resources.get("versusNotPlayerInGame"));
-                return true;
-            }
-
-            if ( args.length < 2 ) {
-                sender.sendMessage(preErr + String.format(Resources.get("versusSetNumber"), command.getName()));
-                return true;
-            }
-
-            int level = GameSessionManager.getSessionByPlayer(player).getLevel();
-            String answer = args[1];
-
-            if ( answer.length() != level ) {
-                sender.sendMessage(preErr + String.format(Resources.get("versusSetNumberFigures"), level));
-                return true;
-            }
-
-            if ( !answer.matches("[0-9]+") ) {
-                sender.sendMessage(preErr + String.format(Resources.get("versusSetNumberFigures"), level));
-                return true;
-            }
-
-            for ( int i=0; i<(level-1); i++ ) {
-                for ( int j=i+1; j<level; j++ ) {
-                    if ( answer.charAt(i) == answer.charAt(j) ) {
-                        sender.sendMessage(preErr + String.format(Resources.get("versusSetNumberSame"), level));
-                        return true;
-                    }
-                }
-            }
-
-            return GameSessionManager.setNumberByPlayer(player, args[1]);
-
+            return execSet(player, args);
         } else if ( args[0].equalsIgnoreCase("call") ) {
-
-            if ( !GameSessionManager.isPlayerForCall(player) ) {
-                sender.sendMessage(preErr + Resources.get("notPlayerForCall"));
-                return true;
-            }
-
-            if ( args.length < 2 ) {
-                sender.sendMessage(preErr + String.format(Resources.get("pleaseCall"), command.getName()));
-                return true;
-            }
-
-            int level = GameSessionManager.getSessionByPlayer(player).getLevel();
-            String answer = args[1];
-
-            if ( answer.length() != level ) {
-                sender.sendMessage(preErr + String.format(Resources.get("versusSetNumberFigures"), level));
-                return true;
-            }
-
-            if ( !answer.matches("[0-9]+") ) {
-                sender.sendMessage(preErr + String.format(Resources.get("versusSetNumberFigures"), level));
-                return true;
-            }
-
-            for ( int i=0; i<(level-1); i++ ) {
-                for ( int j=i+1; j<level; j++ ) {
-                    if ( answer.charAt(i) == answer.charAt(j) ) {
-                        sender.sendMessage(preErr + String.format(Resources.get("versusSetNumberSame"), level));
-                        return true;
-                    }
-                }
-            }
-
-            return GameSessionManager.callNumberByPlayer(player, args[1]);
-
+            return execCall(player, args);
         } else if ( args[0].equalsIgnoreCase("cancel") ) {
-
-            if ( !GameSessionManager.isPlayerForCancel(player) ) {
-                sender.sendMessage(preErr + Resources.get("notPlayerForCancel"));
-                return true;
-            }
-
-            return GameSessionManager.cancelGameByPlayer(player);
-
+            return execCancel(player);
         } else if ( args[0].equalsIgnoreCase("hist") || args[0].equalsIgnoreCase("history") ) {
-
-            if ( !GameSessionManager.isCommandSenderForHistory(player) ) {
-                sender.sendMessage(preErr + Resources.get("notPlayerInGame"));
-                return true;
-            }
-
-            return GameSessionManager.printHistoryByPlayer(player);
-
+            return execHistory(sender);
         } else if ( args[0].equalsIgnoreCase("rank") ) {
-
             printRanking(sender);
             return true;
-
         } else if ( args[0].equalsIgnoreCase("list") ) {
-
             printList(sender);
             return true;
-
         } else if ( args[0].equalsIgnoreCase("listen") ) {
-
-            if ( args.length < 2 ) {
-                sender.sendMessage(preErr + Resources.get("listenerSetName"));
-                return true;
-            }
-
-            String gamename = args[1];
-            GameSession session = GameSessionManager.getSessionByName(gamename);
-
-            if ( session == null ) {
-                sender.sendMessage(preErr +
-                        String.format(Resources.get("listenerNotFound"), gamename) );
-                return true;
-            }
-
-            if ( session.player1.equals(sender) ) {
-                sender.sendMessage(preErr +
-                        String.format(Resources.get("listenerPlayer"), gamename) );
-                return true;
-            } else if ( session instanceof VersusGameSession ) {
-                if ( ((VersusGameSession)session).player2.equals(sender) ) {
-                    sender.sendMessage(preErr +
-                            String.format(Resources.get("listenerPlayer"), gamename) );
-                    return true;
-                }
-            }
-
-            GameSession already = GameSessionManager.getSessionByListener(sender);
-            if ( already != null ) {
-                sender.sendMessage(preErr +
-                        String.format(Resources.get("listenerAlreadyAdded"), already.name) );
-                return true;
-            }
-
-            session.addListener(sender);
-            sender.sendMessage( String.format(Resources.get("listenerAdded"), gamename) );
-            return true;
-
+            return execListen(sender, args);
         } else if ( args[0].equalsIgnoreCase("exitlisten") ) {
-
-            GameSession session = GameSessionManager.getSessionByListener(sender);
-
-            if ( session == null ) {
-                sender.sendMessage(preErr + Resources.get("listenerNotAdded"));
-                return true;
-            }
-
-            session.removeListener(sender);
-            sender.sendMessage( String.format(Resources.get("listenerExited"), session.name) );
-            return true;
-
+            return execExitListen(sender);
         }
 
         return false;
+    }
+
+    private boolean execNewGame(Player player, String[] args) {
+
+        if ( GameSessionManager.isPlayerInGame(player) ) {
+            player.sendMessage(PREERR + Resources.get("cannotRunInGame"));
+            return true;
+        }
+
+        if ( args.length < 2 ) {
+            // Single game mode.
+
+            if ( HitAndBlowPlugin.getSingleDialyTimes() != 0 ) {
+                int times = UserConfiguration.getUserDailyPlayTimes(player.getName());
+                if ( HitAndBlowPlugin.getSingleDialyTimes() <= times ) {
+                    player.sendMessage(PREERR + Resources.get("singleExpire"));
+                    return true;
+                }
+                player.sendMessage(PREERR + String.format(Resources.get("singleTimes"), times+1));
+                player.sendMessage(PREERR + String.format(Resources.get("singleLeast"),
+                        (HitAndBlowPlugin.getSingleDialyTimes() - times)));
+
+                UserConfiguration.addUserDailyPlayTimes(player.getName());
+            }
+
+            new SingleGameSession(player, HitAndBlowPlugin.getSingleLevel());
+            return true;
+
+        } else {
+            // Versus game mode.
+
+            Double stake = HitAndBlowPlugin.getVersusStake();
+            String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
+            int level = HitAndBlowPlugin.getVersusLevel();
+
+            Player other = (Bukkit.getServer().getPlayer(args[1]));
+            if ( other == null ) {
+                player.sendMessage(PREERR + Resources.get("versusOffline"));
+                return true;
+            } else if ( GameSessionManager.isPlayerInGame(other) ) {
+                player.sendMessage(PREERR + Resources.get("versusPartnerInGame"));
+                return true;
+            } else if ( player.getName().equals(other.getName()) ) {
+                player.sendMessage(PREERR + Resources.get("versusSelf"));
+                return true;
+            }
+
+            if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
+                player.sendMessage(PREERR + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
+                return true;
+            }
+
+            if ( args.length >= 3 ) {
+                if ( args[2].matches("[2-7]") ) {
+                    level = Integer.parseInt(args[2]);
+                } else {
+                    player.sendMessage(PREERR + Resources.get("versusLevelWasnotInt"));
+                    return true;
+                }
+            }
+
+            VersusGameSession session = new VersusGameSession(player, other, level);
+
+            session.runPreparePhase();
+
+            return true;
+        }
+    }
+
+    private boolean execAccept(Player player) {
+
+        if ( !GameSessionManager.isPlayerForAccept(player) ) {
+            player.sendMessage(PREERR + Resources.get("versusCannotAccept"));
+            return true;
+        }
+
+        Double stake = HitAndBlowPlugin.getVersusStake();
+        String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
+
+        if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
+            player.sendMessage(PREERR + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
+            return true;
+        }
+
+        return GameSessionManager.runSetNumberPhaseByPlayer(player);
+    }
+
+    private boolean execSet(Player player, String[] args) {
+
+        if ( !GameSessionManager.isPlayerForSet(player) ) {
+            player.sendMessage(PREERR + Resources.get("versusNotPlayerInGame"));
+            return true;
+        }
+
+        if ( args.length < 2 ) {
+            player.sendMessage(PREERR + Resources.get("versusSetNumber"));
+            return true;
+        }
+
+        int level = GameSessionManager.getSessionByPlayer(player).getLevel();
+        String answer = args[1];
+
+        if ( answer.length() != level ) {
+            player.sendMessage(PREERR + String.format(Resources.get("versusSetNumberFigures"), level));
+            return true;
+        }
+
+        if ( !answer.matches("[0-9]+") ) {
+            player.sendMessage(PREERR + String.format(Resources.get("versusSetNumberFigures"), level));
+            return true;
+        }
+
+        for ( int i=0; i<(level-1); i++ ) {
+            for ( int j=i+1; j<level; j++ ) {
+                if ( answer.charAt(i) == answer.charAt(j) ) {
+                    player.sendMessage(PREERR + String.format(Resources.get("versusSetNumberSame"), level));
+                    return true;
+                }
+            }
+        }
+
+        return GameSessionManager.setNumberByPlayer(player, args[1]);
+    }
+
+    private boolean execCall(Player player, String[] args) {
+
+        if ( !GameSessionManager.isPlayerForCall(player) ) {
+            player.sendMessage(PREERR + Resources.get("notPlayerForCall"));
+            return true;
+        }
+
+        if ( args.length < 2 ) {
+            player.sendMessage(PREERR + Resources.get("pleaseCall"));
+            return true;
+        }
+
+        int level = GameSessionManager.getSessionByPlayer(player).getLevel();
+        String answer = args[1];
+
+        if ( answer.length() != level ) {
+            player.sendMessage(PREERR + String.format(Resources.get("versusSetNumberFigures"), level));
+            return true;
+        }
+
+        if ( !answer.matches("[0-9]+") ) {
+            player.sendMessage(PREERR + String.format(Resources.get("versusSetNumberFigures"), level));
+            return true;
+        }
+
+        for ( int i=0; i<(level-1); i++ ) {
+            for ( int j=i+1; j<level; j++ ) {
+                if ( answer.charAt(i) == answer.charAt(j) ) {
+                    player.sendMessage(PREERR + String.format(Resources.get("versusSetNumberSame"), level));
+                    return true;
+                }
+            }
+        }
+
+        return GameSessionManager.callNumberByPlayer(player, args[1]);
+    }
+
+    private boolean execCancel(Player player) {
+
+        if ( !GameSessionManager.isPlayerForCancel(player) ) {
+            player.sendMessage(PREERR + Resources.get("notPlayerForCancel"));
+            return true;
+        }
+
+        return GameSessionManager.cancelGameByPlayer(player);
+    }
+
+    private boolean execHistory(CommandSender sender) {
+
+        if ( !GameSessionManager.isCommandSenderForHistory(sender) ) {
+            sender.sendMessage(PREERR + Resources.get("notPlayerInGame"));
+            return true;
+        }
+
+        return GameSessionManager.printHistoryByPlayer(sender);
+    }
+
+    private boolean execListen(CommandSender sender, String[] args) {
+
+        if ( args.length < 2 ) {
+            sender.sendMessage(PREERR + Resources.get("listenerSetName"));
+            return true;
+        }
+
+        String gamename = args[1];
+        GameSession session = GameSessionManager.getSessionByName(gamename);
+
+        if ( session == null ) {
+            sender.sendMessage(PREERR +
+                    String.format(Resources.get("listenerNotFound"), gamename) );
+            return true;
+        }
+
+        if ( session.player1.equals(sender) ) {
+            sender.sendMessage(PREERR +
+                    String.format(Resources.get("listenerPlayer"), gamename) );
+            return true;
+        } else if ( session instanceof VersusGameSession ) {
+            if ( ((VersusGameSession)session).player2.equals(sender) ) {
+                sender.sendMessage(PREERR +
+                        String.format(Resources.get("listenerPlayer"), gamename) );
+                return true;
+            }
+        }
+
+        GameSession already = GameSessionManager.getSessionByListener(sender);
+        if ( already != null ) {
+            sender.sendMessage(PREERR +
+                    String.format(Resources.get("listenerAlreadyAdded"), already.name) );
+            return true;
+        }
+
+        session.addListener(sender);
+        sender.sendMessage( String.format(Resources.get("listenerAdded"), gamename) );
+        return true;
+    }
+
+    private boolean execExitListen(CommandSender sender) {
+
+        GameSession session = GameSessionManager.getSessionByListener(sender);
+
+        if ( session == null ) {
+            sender.sendMessage(PREERR + Resources.get("listenerNotAdded"));
+            return true;
+        }
+
+        session.removeListener(sender);
+        sender.sendMessage( String.format(Resources.get("listenerExited"), session.name) );
+        return true;
     }
 
     private void printUsage(CommandSender sender, String command) {
