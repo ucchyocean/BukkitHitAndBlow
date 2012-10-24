@@ -39,21 +39,18 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
 
         if ( !(sender instanceof Player) ) {
 
-            if ( args.length >= 1 ) {
-
-                if ( args[0].equalsIgnoreCase("hist") || args[0].equalsIgnoreCase("history") ) {
-                    return execHistory(sender);
-                } if ( args[0].equalsIgnoreCase("rank") ) {
-                    printRanking(sender);
-                    return true;
-                } else if ( args[0].equalsIgnoreCase("list") ) {
-                    printList(sender);
-                    return true;
-                } else if ( args[0].equalsIgnoreCase("listen") ) {
-                    return execListen(sender, args);
-                } else if ( args[0].equalsIgnoreCase("exitlisten") ) {
-                    return execExitListen(sender);
-                }
+            if ( args[0].equalsIgnoreCase("hist") || args[0].equalsIgnoreCase("history") ) {
+                return execHistory(sender);
+            } else if ( args[0].equalsIgnoreCase("rank") ) {
+                printRanking(sender);
+                return true;
+            } else if ( args[0].equalsIgnoreCase("list") ) {
+                printList(sender);
+                return true;
+            } else if ( args[0].equalsIgnoreCase("listen") ) {
+                return execListen(sender, args);
+            } else if ( args[0].equalsIgnoreCase("exitlisten") ) {
+                return execExitListen(sender);
             }
 
             sender.sendMessage(PREERR + Resources.get("cannotRunOnConsole"));
@@ -300,6 +297,11 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
         if ( already != null ) {
             sender.sendMessage(PREERR +
                     String.format(Resources.get("listenerAlreadyAdded"), already.name) );
+            return true;
+        }
+
+        if ( sender instanceof Player && GameSessionManager.isPlayerInGame((Player)sender) ) {
+            sender.sendMessage(PREERR + Resources.get("listenerAlreadyInGame") );
             return true;
         }
 

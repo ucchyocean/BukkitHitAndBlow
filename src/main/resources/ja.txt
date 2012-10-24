@@ -10,6 +10,7 @@ cannotRunOnConsole=コンソールからは実行できないコマンドです�
 
 listenerAdded=ゲーム%sの観戦をします。
 listenerAlreadyAdded=あなたは既にゲーム%sを観戦しています。
+listenerAlreadyInGame=ゲーム中は別のゲームを観戦することはできません。
 listenerCanceled=ゲーム%sがキャンセルされました。
 listenerExited=ゲーム%sの観戦から退出しました。
 listenerNotAdded=あなたはゲームを観戦していません。

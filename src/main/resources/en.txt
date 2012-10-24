@@ -10,6 +10,7 @@ cannotRunOnConsole=Cannot execute this command from a console.
 
 listenerAdded=Added you to the listener of game %s.
 listenerAlreadyAdded=Already you listen game %s.
+listenerAlreadyInGame=You are already in game.
 listenerCanceled=Game %s was canceled.
 listenerExited=Exited from listening of game %s.
 listenerNotAdded=You are not the listener of any game.

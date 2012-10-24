@@ -1,6 +1,6 @@
 name: HitAndBlow
 main: com.github.ucchyocean.hitandblow.HitAndBlowPlugin
-version: 1.0.2
+version: 1.0.3
 authors: [ucchy]
 load: startup
 description: Minecraft Hit And Blow Game.
