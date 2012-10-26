@@ -1,12 +1,13 @@
 /*
  * Copyright ucchy 2012
  */
-package com.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow.session;
 
 import java.util.Vector;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
 
 public class GameSessionManager {
 
@@ -119,7 +120,7 @@ public class GameSessionManager {
 
     public static boolean isPlayerInGame(Player player) {
 
-        return (getSessionByPlayer(player) != null);
+        return (getSessionByPlayerAndListener(player) != null);
     }
 
     public static GameSession getSessionByPlayer(Player player) {

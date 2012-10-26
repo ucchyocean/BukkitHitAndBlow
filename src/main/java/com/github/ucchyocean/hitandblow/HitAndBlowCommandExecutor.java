@@ -12,7 +12,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.github.ucchyocean.misc.Resources;
+import com.github.ucchyocean.hitandblow.session.GameSession;
+import com.github.ucchyocean.hitandblow.session.GameSessionManager;
+import com.github.ucchyocean.hitandblow.session.SingleGameSession;
+import com.github.ucchyocean.hitandblow.session.VersusGameSession;
 
 /**
  * @author ucchy
@@ -96,28 +99,26 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
         if ( args.length < 2 ) {
             // Single game mode.
 
-            if ( HitAndBlowPlugin.getSingleDialyTimes() != 0 ) {
+            if ( HitAndBlowPlugin.config.getSingleDailyTimes() != 0 ) {
                 int times = UserConfiguration.getUserDailyPlayTimes(player.getName());
-                if ( HitAndBlowPlugin.getSingleDialyTimes() <= times ) {
+                if ( HitAndBlowPlugin.config.getSingleDailyTimes() <= times ) {
                     player.sendMessage(PREERR + Resources.get("singleExpire"));
                     return true;
                 }
                 player.sendMessage(PREERR + String.format(Resources.get("singleTimes"), times+1));
                 player.sendMessage(PREERR + String.format(Resources.get("singleLeast"),
-                        (HitAndBlowPlugin.getSingleDialyTimes() - times)));
+                        (HitAndBlowPlugin.config.getSingleDailyTimes() - times)));
 
                 UserConfiguration.addUserDailyPlayTimes(player.getName());
             }
 
-            new SingleGameSession(player, HitAndBlowPlugin.getSingleLevel());
+            new SingleGameSession(player, HitAndBlowPlugin.config.getSingleLevel());
             return true;
 
         } else {
             // Versus game mode.
 
-            Double stake = HitAndBlowPlugin.getVersusStake();
-            String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
-            int level = HitAndBlowPlugin.getVersusLevel();
+            int level = HitAndBlowPlugin.config.getVersusLevel();
 
             Player other = (Bukkit.getServer().getPlayer(args[1]));
             if ( other == null ) {
@@ -131,8 +132,9 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
                 return true;
             }
 
-            if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
-                player.sendMessage(PREERR + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
+            if ( !HitAndBlowPlugin.mediator.hasVersusStake(player) ) {
+                String stake = HitAndBlowPlugin.mediator.getDisplayVersusStake();
+                player.sendMessage(PREERR + String.format(Resources.get("versusDontHaveFunds"), stake));
                 return true;
             }
 
@@ -160,11 +162,9 @@ public class HitAndBlowCommandExecutor implements CommandExecutor {
             return true;
         }
 
-        Double stake = HitAndBlowPlugin.getVersusStake();
-        String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
-
-        if ( !HitAndBlowPlugin.accountHandler.hasFunds(player.getName(), stake) ) {
-            player.sendMessage(PREERR + String.format(Resources.get("versusDontHaveFunds"), stake, unit));
+        if ( !HitAndBlowPlugin.mediator.hasVersusStake(player) ) {
+            String stake = HitAndBlowPlugin.mediator.getDisplayVersusStake();
+            player.sendMessage(PREERR + String.format(Resources.get("versusDontHaveFunds"), stake));
             return true;
         }
 

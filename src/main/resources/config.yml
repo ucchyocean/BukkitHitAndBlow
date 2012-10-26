@@ -1,4 +1,4 @@
-# Hit And Blow 1.0.3
+# Hit And Blow 1.1.0
 # @author     ucchy
 # @license    GPLv2
 # @copyright  Copyright ucchy 2012
@@ -9,14 +9,23 @@ announce: true
 # Resource language.
 lang: en
 
+# You can choose "item" or "money".
+# NOTE: If you want to use "money", you have to load Vault plugin.
+mode: item
+
 # Settings for Single mode game.
 single:
   
   # Game level.
   level: 3
   
-  # Reward money for winner.
-  rewards: [100000.0, 10000.0, 2500.0, 1000.0, 250.0, 100.0, 50.0, 25.0, 10.0, 5.0]
+  # Reward item for winner. (For item mode)
+  # Default is [DIAMOND_BLOCK, GOLD_BLOCK, DIAMOND, IRON_BLOCK, GOLD_INGOT, 
+  #             IRON_INGOT, SLIME_BALL, STEAK, BREAD, LOG]
+  itemRewards: [57, 41, 264, 42, 266, 265, 341, 364, 297, 17]
+  
+  # Reward money for winner. (For money mode)
+  moneyRewards: [100000.0, 10000.0, 2500.0, 1000.0, 250.0, 100.0, 50.0, 25.0, 10.0, 5.0]
   
   # Playable times in daily. If set 0, the users can play single game infinity.
   dailyTimes: 3
@@ -27,8 +36,13 @@ versus:
   # Default game level.
   level: 3
   
-  # Stake money for versus game.
-  stake: 100.0
+  # Stake item for versus game. (For item mode)
+  # NOTE: Reward is two of versusStake.
+  # Default is DIAMOND.
+  itemStake: 264
 
-  # Reward money for versus game winner.
-  reward: 200.0
+  # Stake money for versus game. (For money mode)
+  moneyStake: 100.0
+
+  # Reward money for versus game winner. (For money mode)
+  moneyReward: 200.0

@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package com.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow.session;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -16,6 +16,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.github.ucchyocean.hitandblow.HitAndBlowException;
+import com.github.ucchyocean.hitandblow.HitAndBlowPlugin;
+
 /**
  * @author ucchy
  *
@@ -25,11 +28,11 @@ public abstract class GameSession {
     enum GamePhase {
         SINGLE_CALL, VERSUS_PREPARE, VERSUS_SETNUMBER, VERSUS_P1CALL, VERSUS_P2CALL, ENDED, CANCELED };
 
-    protected String name;
-    protected Player player1;
-    protected Vector<CommandSender> listeners;
-    protected String startDate;
+    public String name;
+    public Player player1;
+    public Vector<CommandSender> listeners;
 
+    protected String startDate;
     protected GamePhase phase;
     protected int level;
     protected int[] p2answer;
@@ -183,12 +186,12 @@ public abstract class GameSession {
         }
     }
 
-    protected void addListener(CommandSender player) {
+    public void addListener(CommandSender player) {
 
         listeners.add(player);
     }
 
-    protected void removeListener(CommandSender player) {
+    public void removeListener(CommandSender player) {
 
         listeners.remove(player);
     }

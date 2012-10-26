@@ -152,10 +152,10 @@ public class UserConfiguration extends HashMap<String, Object> {
         conf.save(name);
     }
 
-    public static void addScore(String name, Double value) {
+    public static void addScore(String name, double value) {
 
         UserConfiguration conf = getUserConfiguration(name);
-        Double score = (Double)conf.get(KEY_USER_SCORE);
+        double score = (Double)conf.get(KEY_USER_SCORE);
         conf.put(KEY_USER_SCORE, score + value);
 
         conf.save(name);

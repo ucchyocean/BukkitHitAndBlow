@@ -1,10 +1,9 @@
 /*
  * Copyright ucchy 2012
  */
-package com.github.ucchyocean.misc;
+package com.github.ucchyocean.hitandblow.handler;
 
 import net.milkbowl.vault.economy.Economy;
-import net.milkbowl.vault.permission.Permission;
 
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
@@ -14,8 +13,7 @@ import org.bukkit.plugin.Plugin;
  */
 public class AccountHandler {
 
-    public static Economy econ = null;
-    public static Permission perms = null;
+    private static Economy econ = null;
 
     public AccountHandler() throws Exception {
 
@@ -26,8 +24,7 @@ public class AccountHandler {
         econ = Bukkit.getServer().getServicesManager().getRegistration(Economy.class).getProvider();
     }
 
-    public boolean hasFunds(String name, double value)
-    {
+    public boolean hasFunds(String name, double value) {
         if( !econ.hasAccount(name) ) {
             econ.createBank(name, name);
         }
@@ -36,23 +33,19 @@ public class AccountHandler {
         return Double.compare(account, value) >= 0;
     }
 
-    public boolean chargeMoney(String name, double value)
-    {
+    public boolean chargeMoney(String name, double value) {
         return econ.withdrawPlayer(name, value).transactionSuccess();
     }
 
-    public boolean addMoney(String name, double value)
-    {
+    public boolean addMoney(String name, double value) {
         return econ.depositPlayer(name, value).transactionSuccess();
     }
 
-    public String getUnitsPlural()
-    {
+    public String getUnitsPlural() {
         return econ.currencyNamePlural();
     }
 
-    public String getUnitsSingular()
-    {
+    public String getUnitsSingular() {
         return econ.currencyNameSingular();
     }
 }

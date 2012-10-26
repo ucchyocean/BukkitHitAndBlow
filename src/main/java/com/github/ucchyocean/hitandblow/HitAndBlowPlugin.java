@@ -8,16 +8,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 import java.util.jar.JarFile;
 import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 
-import org.bukkit.configuration.Configuration;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.github.ucchyocean.misc.AccountHandler;
-import com.github.ucchyocean.misc.Resources;
+import com.github.ucchyocean.hitandblow.handler.ChargeMediator;
+import com.github.ucchyocean.hitandblow.session.PlayerLogoutListener;
 
 /**
  * @author ucchy
@@ -27,18 +25,6 @@ public class HitAndBlowPlugin extends JavaPlugin {
 
     public static final String NAME = "HitAndBlow";
 
-    private static final int MIN_LEVEL = 2;
-    private static final int MAX_LEVEL = 7;
-
-    public static final String KEY_CONF_ANNOUNCE = "announce";
-    public static final String KEY_CONF_LANG = "lang";
-    public static final String KEY_CONF_SINGLE_REWARDS = "single.rewards";
-    public static final String KEY_CONF_SINGLE_LEVEL = "single.level";
-    public static final String KEY_CONF_SINGLE_TIMES = "single.dailyTimes";
-    public static final String KEY_CONF_VERSUS_STAKE = "versus.stake";
-    public static final String KEY_CONF_VERSUS_LEVEL = "versus.level";
-    public static final String KEY_CONF_VERSUS_REWARD = "versus.reward";
-
     private static final String GameLogFolderName = "gamelog";
     private static final String UserFolderName = "user";
     private static final String LangFolderName = "lang";
@@ -46,8 +32,8 @@ public class HitAndBlowPlugin extends JavaPlugin {
     public static String GameLogFolder;
     public static String UserFolder;
     public static Logger logger;
-    public static AccountHandler accountHandler;
-    public static Configuration config;
+    public static HitAndBlowConfiguration config;
+    public static ChargeMediator mediator;
 
     private HitAndBlowCommandExecutor executor;
 
@@ -62,22 +48,15 @@ public class HitAndBlowPlugin extends JavaPlugin {
         instance = this;
         logger = this.getLogger();
 
-        try {
-            accountHandler = new AccountHandler();
-        } catch (Exception e) {
-            logger.severe(e.getLocalizedMessage());
-            e.printStackTrace();
-            getServer().getPluginManager().disablePlugin(this);
-            return;
-        }
-
         File configFile = new File(getDataFolder(), "config.yml");
         if ( !configFile.exists() ) {
             copyFileFromJar(configFile, "config.yml");
         }
-        config = getConfig();
+        config = new HitAndBlowConfiguration(getConfig());
 
-        initResource(getLang());
+        initResource(config.getLang());
+
+        mediator = new ChargeMediator(config.getMode());
 
         executor = new HitAndBlowCommandExecutor();
         getCommand("hb").setExecutor(executor);
@@ -113,58 +92,6 @@ public class HitAndBlowPlugin extends JavaPlugin {
         // Load (overwrite) resource from lang folder file.
         Resources.loadFromFile(getDataFolder() + File.separator +
                 HitAndBlowPlugin.LangFolderName + File.separator + lang + ".txt");
-    }
-
-    public static List<Double> getSingleRewards() {
-
-        return config.getDoubleList(KEY_CONF_SINGLE_REWARDS);
-    }
-
-    public static int getSingleLevel() {
-
-        int level = config.getInt(KEY_CONF_SINGLE_LEVEL);
-        if ( level < MIN_LEVEL ) {
-            level = MIN_LEVEL;
-        } else if ( level > MAX_LEVEL ) {
-            level = MAX_LEVEL;
-        }
-        return level;
-    }
-
-    public static Double getVersusStake() {
-
-        return config.getDouble(KEY_CONF_VERSUS_STAKE);
-    }
-
-    public static int getVersusLevel() {
-
-        int level = config.getInt(KEY_CONF_VERSUS_LEVEL);
-        if ( level < MIN_LEVEL ) {
-            level = MIN_LEVEL;
-        } else if ( level > MAX_LEVEL ) {
-            level = MAX_LEVEL;
-        }
-        return level;
-    }
-
-    public static Double getVersusReward() {
-
-        return config.getDouble(KEY_CONF_VERSUS_REWARD);
-    }
-
-    public static int getSingleDialyTimes() {
-
-        return config.getInt(KEY_CONF_SINGLE_TIMES);
-    }
-
-    public static boolean getAnnounce() {
-
-        return config.getBoolean(KEY_CONF_ANNOUNCE);
-    }
-
-    public static String getLang() {
-
-        return config.getString(KEY_CONF_LANG);
     }
 
     private void copyFileFromJar(File outputFile, String inputFileName) {

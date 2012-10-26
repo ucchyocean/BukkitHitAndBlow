@@ -1,9 +1,8 @@
 /*
  * Copyright ucchy 2012
  */
-package com.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow.session;
 
-import java.util.List;
 import java.util.Random;
 import java.util.Vector;
 
@@ -12,7 +11,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.github.ucchyocean.misc.Resources;
+import com.github.ucchyocean.hitandblow.HitAndBlowPlugin;
+import com.github.ucchyocean.hitandblow.Resources;
 
 /**
  * @author ucchy
@@ -27,7 +27,7 @@ public class SingleGameSession extends GameSession {
         phase = GamePhase.SINGLE_CALL;
         makeAnswer();
 
-        if ( HitAndBlowPlugin.getAnnounce() ) {
+        if ( HitAndBlowPlugin.config.getAnnounce() ) {
             Bukkit.broadcastMessage(ChatColor.GRAY +
                     String.format("[" + HitAndBlowPlugin.NAME + "] " + Resources.get("announceSingleStart"),
                             player.getName()));
@@ -51,7 +51,7 @@ public class SingleGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#callNumber(org.bukkit.entity.Player, java.lang.String)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#callNumber(org.bukkit.entity.Player, java.lang.String)
      */
     @Override
     protected void callNumber(Player player, String number) {
@@ -79,7 +79,7 @@ public class SingleGameSession extends GameSession {
             printP1(ChatColor.GOLD + Resources.get("singleWon"));
             payReward(player1);
 
-            if ( HitAndBlowPlugin.getAnnounce() ) {
+            if ( HitAndBlowPlugin.config.getAnnounce() ) {
                 Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlowPlugin.NAME + "] " +
                         String.format(Resources.get("announceSingleEnd"),
                                 player.getName(), p1codeHistory.size() ));
@@ -90,7 +90,7 @@ public class SingleGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#cancelGame()
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#cancelGame()
      */
     @Override
     protected void cancelGame() {
@@ -102,23 +102,20 @@ public class SingleGameSession extends GameSession {
 
     private void payReward(Player player) {
 
-        List<Double> rewards = HitAndBlowPlugin.getSingleRewards();
         int times = p1codeHistory.size();
-        String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
 
         printP1(String.format( Resources.get("singleWonPay1"), times ));
 
-        if ( times <= rewards.size() ) {
-            Double reward = rewards.get(times-1);
-            printP1(String.format( Resources.get("singleWonPay2"), reward, unit ));
-            HitAndBlowPlugin.accountHandler.addMoney(player.getName(), reward);
+        if ( HitAndBlowPlugin.mediator.isSinglePayTimes(times) ) {
 
-            UserConfiguration.addScore(player.getName(), reward);
+            String reward = HitAndBlowPlugin.mediator.getDisplaySingleReward(times);
+            printP1(String.format( Resources.get("singleWonPay2"), reward ));
+            HitAndBlowPlugin.mediator.paySingleReward(player, times);
         }
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#getHistory(org.bukkit.command.CommandSender)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#getHistory(org.bukkit.command.CommandSender)
      */
     @Override
     protected Vector<String> getHistory(CommandSender sender) {
@@ -159,7 +156,7 @@ public class SingleGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForSet(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#isPlayerForSet(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForSet(Player player) {
@@ -167,7 +164,7 @@ public class SingleGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForCall(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#isPlayerForCall(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForCall(Player player) {
@@ -175,7 +172,7 @@ public class SingleGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForCancel(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#isPlayerForCancel(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForCancel(Player player) {
@@ -208,7 +205,7 @@ public class SingleGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#toString()
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#toString()
      */
     @Override
     public String toString() {

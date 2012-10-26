@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package com.github.ucchyocean.hitandblow;
+package com.github.ucchyocean.hitandblow.session;
 
 import java.util.List;
 import java.util.Vector;
@@ -11,7 +11,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.github.ucchyocean.misc.Resources;
+import com.github.ucchyocean.hitandblow.HitAndBlowException;
+import com.github.ucchyocean.hitandblow.HitAndBlowPlugin;
+import com.github.ucchyocean.hitandblow.Resources;
 
 /**
  * @author ucchy
@@ -19,13 +21,13 @@ import com.github.ucchyocean.misc.Resources;
  */
 public class VersusGameSession extends GameSession {
 
-    protected Player player2;
+    public Player player2;
 
     private int[] p1answer;
     private Vector<int[]> p2scoreHistry;
     private Vector<String> p2codeHistry;
 
-    protected VersusGameSession(Player player1, Player player2, int level) {
+    public VersusGameSession(Player player1, Player player2, int level) {
 
         super(player1, level);
 
@@ -37,44 +39,42 @@ public class VersusGameSession extends GameSession {
         phase = GamePhase.VERSUS_PREPARE;
     }
 
-    protected void runPreparePhase() {
+    public void runPreparePhase() {
 
-        String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
+        String stake = HitAndBlowPlugin.mediator.getDisplayVersusStake();
 
-        printP1( String.format(Resources.get("versusNewgameSend"),
+        printP1(String.format(Resources.get("versusNewgameSend"),
                 player2.getName()) );
 
-        printP2( String.format(Resources.get("versusNewgameReceive1"),
+        printP2(String.format(Resources.get("versusNewgameReceive1"),
                 player2.getName()) );
         printP2(String.format(Resources.get("versusNewgameReceive2"),
-                HitAndBlowPlugin.getVersusStake(), unit));
+                stake));
         printP2(Resources.get("versusNewgameReceive3"));
     }
 
     protected boolean runSetNumberPhase() {
 
-        String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
+        String stake = HitAndBlowPlugin.mediator.getDisplayVersusStake();
 
-        if ( !HitAndBlowPlugin.accountHandler.hasFunds(player1.getName(), HitAndBlowPlugin.getVersusStake())) {
+        if ( !HitAndBlowPlugin.mediator.hasVersusStake(player1) ) {
             printBoth(String.format(Resources.get("versusPartnerNotHaveFunds"),
-                    player1.getName(), HitAndBlowPlugin.getVersusStake(), unit));
+                    player1.getName(), stake));
             return false;
         }
-        if ( !HitAndBlowPlugin.accountHandler.hasFunds(player2.getName(), HitAndBlowPlugin.getVersusStake())) {
+        if ( !HitAndBlowPlugin.mediator.hasVersusStake(player2) ) {
             printBoth(String.format(Resources.get("versusPartnerNotHaveFunds"),
-                    player2.getName(), HitAndBlowPlugin.getVersusStake(), unit));
+                    player2.getName(), stake));
             return false;
         }
 
-        HitAndBlowPlugin.accountHandler.chargeMoney(player1.getName(), HitAndBlowPlugin.getVersusStake());
-        HitAndBlowPlugin.accountHandler.chargeMoney(player2.getName(), HitAndBlowPlugin.getVersusStake());
+        HitAndBlowPlugin.mediator.chargeVersusStake(player1);
+        HitAndBlowPlugin.mediator.chargeVersusStake(player2);
 
         phase = GamePhase.VERSUS_SETNUMBER;
 
-        printBoth(String.format(Resources.get("versusStarting1"),
-                HitAndBlowPlugin.getVersusStake(), unit));
-        printBoth(String.format(Resources.get("versusStarting2"),
-                level));
+        printBoth(String.format(Resources.get("versusStarting1"), stake));
+        printBoth(ChatColor.RED + String.format(Resources.get("versusStarting2"), level));
 
         return true;
     }
@@ -103,7 +103,7 @@ public class VersusGameSession extends GameSession {
 
     protected void runGamePhase() {
 
-        if ( HitAndBlowPlugin.getAnnounce() ) {
+        if ( HitAndBlowPlugin.config.getAnnounce() ) {
             Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlowPlugin.NAME + "] " +
                     String.format(Resources.get("announceVersusStart"),
                             player1.getName(), player2.getName() ));
@@ -177,7 +177,7 @@ public class VersusGameSession extends GameSession {
 
             printToOther(player, ChatColor.GOLD + Resources.get("versusLost"));
 
-            if ( HitAndBlowPlugin.getAnnounce() ) {
+            if ( HitAndBlowPlugin.config.getAnnounce() ) {
                 Bukkit.broadcastMessage(ChatColor.GRAY + "[" + HitAndBlowPlugin.NAME + "] " +
                         String.format(Resources.get("announceVersusEnd"),
                                 player.getName(),
@@ -191,18 +191,15 @@ public class VersusGameSession extends GameSession {
 
     private void payReward(Player player) {
 
-        String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
-        Double reward = HitAndBlowPlugin.getVersusReward();
-        printTo(player, String.format( Resources.get("singleWonPay2"), reward, unit ));
-        HitAndBlowPlugin.accountHandler.addMoney( player.getName(), reward );
-
-        UserConfiguration.addScore(player.getName(), reward);
+        String reward = HitAndBlowPlugin.mediator.getDisplayVersusReward();
+        printTo(player, String.format( Resources.get("singleWonPay2"), reward ));
+        HitAndBlowPlugin.mediator.payVersusReward(player);
     }
 
     @Override
     protected void cancelGame() {
 
-        String unit = HitAndBlowPlugin.accountHandler.getUnitsPlural();
+        String stake = HitAndBlowPlugin.mediator.getDisplayVersusStake();
 
         printBoth( ChatColor.RED + Resources.get("canceled"));
         printToListeners( String.format(Resources.get("listenerCanceled"), name) );
@@ -213,14 +210,12 @@ public class VersusGameSession extends GameSession {
 
             // returning funds for online player.
             if ( player1.isOnline() ) {
-                printP1( String.format( Resources.get("versusCancelReturn"),
-                        HitAndBlowPlugin.getVersusStake(), unit ) );
-                HitAndBlowPlugin.accountHandler.addMoney(player1.getName(), HitAndBlowPlugin.getVersusStake());
+                printP1( String.format( Resources.get("versusCancelReturn"), stake ) );
+                HitAndBlowPlugin.mediator.payVersusStake(player1);
             }
             if ( player2.isOnline() ) {
-                printP2( String.format( Resources.get("versusCancelReturn"),
-                        HitAndBlowPlugin.getVersusStake(), unit ) );
-                HitAndBlowPlugin.accountHandler.addMoney(player2.getName(), HitAndBlowPlugin.getVersusStake());
+                printP2( String.format( Resources.get("versusCancelReturn"), stake ) );
+                HitAndBlowPlugin.mediator.payVersusStake(player2);
             }
         }
 
@@ -253,7 +248,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForSet(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#isPlayerForSet(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForSet(Player player) {
@@ -262,7 +257,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForCall(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#isPlayerForCall(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForCall(Player player) {
@@ -277,7 +272,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#isPlayerForCancel(org.bukkit.entity.Player)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#isPlayerForCancel(org.bukkit.entity.Player)
      */
     @Override
     protected boolean isPlayerForCancel(Player player) {
@@ -286,7 +281,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#getHistory(org.bukkit.command.CommandSender)
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#getHistory(org.bukkit.command.CommandSender)
      */
     @Override
     protected Vector<String> getHistory(CommandSender sender) {
@@ -387,7 +382,7 @@ public class VersusGameSession extends GameSession {
     }
 
     /**
-     * @see com.github.ucchyocean.hitandblow.GameSession#toString()
+     * @see com.github.ucchyocean.hitandblow.session.GameSession#toString()
      */
     @Override
     public String toString() {

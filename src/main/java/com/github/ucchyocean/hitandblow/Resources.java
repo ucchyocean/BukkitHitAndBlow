@@ -1,7 +1,7 @@
 /*
  * Copyright ucchy 2012
  */
-package com.github.ucchyocean.misc;
+package com.github.ucchyocean.hitandblow;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
