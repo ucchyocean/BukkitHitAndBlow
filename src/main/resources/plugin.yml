@@ -5,10 +5,10 @@ authors: [ucchy]
 load: startup
 description: Minecraft Hit And Blow Game.
 commands:
-  hb:
+  hitandblow:
     description: Minecraft Hit And Blow Game.
-    usage: |
-           /<command> - Minecraft Hit And Blow Game Command.
+    aliases: hb
+    usage: /<command> - Minecraft Hit And Blow Game Command.
     permission: hitandblow
     permission-message: You don't have permission <permission>
 permissions:

@@ -59,7 +59,7 @@ public class HitAndBlowPlugin extends JavaPlugin {
         mediator = new ChargeMediator(config.getMode());
 
         executor = new HitAndBlowCommandExecutor();
-        getCommand("hb").setExecutor(executor);
+        getCommand("hitandblow").setExecutor(executor);
 
         PlayerLogoutListener listener = new PlayerLogoutListener();
         getServer().getPluginManager().registerEvents(listener, this);
@@ -87,7 +87,11 @@ public class HitAndBlowPlugin extends JavaPlugin {
         }
 
         // Load default resrouce from jar file.
-        Resources.loadFromInputStream(getInputStreamFromJar("en.txt"));
+        if ( lang.equals("ja") ) {
+            Resources.loadFromInputStream(getInputStreamFromJar("ja.txt"));
+        } else {
+            Resources.loadFromInputStream(getInputStreamFromJar("en.txt"));
+        }
 
         // Load (overwrite) resource from lang folder file.
         Resources.loadFromFile(getDataFolder() + File.separator +
